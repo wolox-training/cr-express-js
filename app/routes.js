@@ -10,5 +10,3 @@ exports.init = app => {
   // app.put('/endpoint/put/path', [], controller.methodPUT);
   // app.post('/endpoint/post/path', [], controller.methodPOST);
 };
-
-

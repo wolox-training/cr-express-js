@@ -1,46 +1,42 @@
 const https = require('https');
 const url = 'https://jsonplaceholder.typicode.com/albums';
 
-
-let getAll = () => {
-    return new Promise((resolve, reject) => {
-        https.get(url, (res, err) => {
-            if (res) {
-                res.setEncoding('utf8');
-                let body = '';
-                res.on('data', data => {
-                    body += data;
-                });
-                res.on('end', () => {
-                    body = JSON.parse(body);
-                    //console.log(body);       
-                    resolve(body);
-                });
-            } else {
-                reject(new Error('Not Found'));
-            }
+const getAll = () =>
+  new Promise((resolve, reject) => {
+    https.get(url, (res, err) => {
+      if (res) {
+        res.setEncoding('utf8');
+        let body = '';
+        res.on('data', data => {
+          body += data;
         });
-    });
-}
-
-let getPhotosAlbum = (id) => {
-    return new Promise((resolve, reject) => {
-        https.get(`${url}/${id}/photos`, (res) => {
-            if (res) {
-                res.setEncoding('utf8');
-                let body = '';
-                res.on('data', data => {
-                    body += data;
-                });
-                res.on('end', () => {
-                    body = JSON.parse(body);
-                    resolve(body);
-                });
-            } else {
-                reject();
-            }
+        res.on('end', () => {
+          body = JSON.parse(body);
+          resolve(body);
         });
+      } else {
+        reject(err);
+      }
     });
-}
+  });
 
-module.exports = { getAll, getPhotosAlbum }
+const getPhotosAlbum = id =>
+  new Promise((resolve, reject) => {
+    https.get(`${url}/${id}/photos`, (res, err) => {
+      if (res) {
+        res.setEncoding('utf8');
+        let body = '';
+        res.on('data', data => {
+          body += data;
+        });
+        res.on('end', () => {
+          body = JSON.parse(body);
+          resolve(body);
+        });
+      } else {
+        reject(err);
+      }
+    });
+  });
+
+module.exports = { getAll, getPhotosAlbum };

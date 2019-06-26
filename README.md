@@ -21,7 +21,7 @@ Before running the app, make sure you have [postgresql installed](https://www.di
 Then, set in `.env` some variables:
 - DB_HOST=localhost
 - DB_PORT=5432
-- DB_USERNAME=project_name
+- DB_USERNAME=project_name  
 - DB_PASSWORD=project_name
 - DB_NAME=db_project_name
 - DB_NAME_DEV=db_project_name_dev
