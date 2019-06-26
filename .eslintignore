@@ -1,1 +1,4 @@
 app/dist
+app/controllers
+app/services
+app/routes.js
