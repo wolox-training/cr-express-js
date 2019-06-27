@@ -1,0 +1,20 @@
+const { body } = require('express-validator/check');
+exports.validateSignup = (req, res, next) => [
+  body('name')
+    .not()
+    .isEmpty()
+    .withMessage('name is required'),
+  body('lastname')
+    .not()
+    .isEmpty()
+    .withMessage('lastname is required'),
+  body('email', 'Invalid email')
+    .isEmail()
+    .withMessage('email error')
+    .not()
+    .isEmpty()
+    .withMessage('email is required'),
+  body('password')
+    .isLength({ min: 8 })
+    .isAlphanumeric()
+];

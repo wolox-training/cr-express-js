@@ -27,7 +27,7 @@ const register = (req, res, next) => {
                 password: bcrypt.hashSync(req.body.password, salt)
               })
               .then(userCreated => {
-                console.log(`User with name ${user.name} created!!`);
+                console.log(`User with name ${userCreated.name} created!!`);
                 res.send(JSON.stringify(userCreated));
               })
               .catch(err => {
