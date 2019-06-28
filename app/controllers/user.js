@@ -7,7 +7,6 @@ exports.register = (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (errors.isEmpty() === false) {
-      console.log('entro a errors');
       console.log(errors);
       res.status(422).send(JSON.stringify(errors.array()));
     } else {
