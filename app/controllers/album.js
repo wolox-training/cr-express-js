@@ -1,6 +1,5 @@
 const albumService = require('../services/album');
 
-// GET ALL THE ALBUMS
 const getAll = (req, res) => {
   albumService
     .getAll()
@@ -12,7 +11,6 @@ const getAll = (req, res) => {
     });
 };
 
-// GET THE PHOTOS OF AN ALBUM
 const getPhotosAlbum = (req, res) => {
   const { id } = req.params;
 
