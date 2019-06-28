@@ -1,31 +1,21 @@
 const albumService = require('../services/album');
 
-const getAll = (req, res) => {
+exports.getAllAlbums = (req, res, next) =>
   albumService
-    .getAll()
-    .then(albums => {
-      res.status(200).send(albums);
-    })
-    .catch(error => {
-      throw error;
-    });
-};
+    .getAllAlbums()
+    .then(albums => res.send(albums))
+    .catch(next);
 
-const getPhotosAlbum = (req, res) => {
+exports.getPhotosAlbum = (req, res, next) => {
   const { id } = req.params;
-
-  albumService
+  return albumService
     .getPhotosAlbum(id)
     .then(albums => {
       if (albums) {
-        res.status(200).send(albums);
+        res.send(albums);
       } else {
-        res.status(404).send('NOT FOUND');
+        next(new Error('NOT FOUND'));
       }
     })
-    .catch(error => {
-      throw error;
-    });
+    .catch(next);
 };
-
-module.exports = { getAll, getPhotosAlbum };
