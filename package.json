@@ -20,6 +20,7 @@
     "pretest": "npm run lint",
     "prestart": "npm run lint",
     "migrations": "sequelize db:migrate",
+    "migrations-test": "NODE_ENV=testing sequelize db:migrate",
     "start": "nodemon --inspect server.js"
   },
   "cacheDirectories": [

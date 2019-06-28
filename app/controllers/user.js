@@ -7,7 +7,6 @@ exports.register = (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (errors.isEmpty() === false) {
-      console.log('entro a errors');
       console.log(errors);
       res.status(422).send(JSON.stringify(errors.array()));
     } else {
@@ -15,7 +14,7 @@ exports.register = (req, res, next) => {
         .findOne({ where: { email: req.body.email } })
         .then(user => {
           if (user) {
-            res.send('User with that email already exists!');
+            next(new Error('User already exists'));
           } else {
             userModel
               .create({
