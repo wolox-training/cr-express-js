@@ -1,5 +1,5 @@
 const { body } = require('express-validator/check');
-exports.validateSignup = (req, res, next) => [
+exports.validateSignup = () => [
   body('name')
     .not()
     .isEmpty()
