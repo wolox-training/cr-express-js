@@ -12,7 +12,7 @@ describe('POST / users', () => {
     request(app)
       .post('/users')
       .send(data)
-      .expect(200, done);
+      .expect(200, done());
   });
 
   it('should reject the request for the existence of the email', done => {
@@ -23,7 +23,7 @@ describe('POST / users', () => {
         request(app)
           .post('/users')
           .send(data)
-          .expect(409, done)
+          .expect(409, done())
       )
       .catch(done());
   });
@@ -38,7 +38,7 @@ describe('POST / users', () => {
     request(app)
       .post('/users')
       .send(data2)
-      .expect(400, done);
+      .expect(400, done());
   });
 
   it('should reject the request for uncompleted fields', done => {
@@ -51,6 +51,6 @@ describe('POST / users', () => {
     request(app)
       .post('/users')
       .send(data3)
-      .expect(400, done);
+      .expect(400, done());
   });
 });
