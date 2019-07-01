@@ -1,21 +1,19 @@
 const { body } = require('express-validator/check');
 exports.validateSignup = () => [
-  body('name')
+  body('name', 'name error')
     .not()
-    .isEmpty()
-    .withMessage('name is required'),
-  body('lastName')
+    .isEmpty(),
+  body('lastName', 'lastName error')
     .not()
-    .isEmpty()
-    .withMessage('lastname is required'),
-  body('email', 'Invalid email')
+    .isEmpty(),
+  body('email', 'email error')
     .isEmail()
     .custom(value => {
       let aux = value.substr(value.indexOf('@') + 1);
       aux = aux.substr(0, aux.indexOf('.'));
       return aux === 'wolox';
     }),
-  body('password')
+  body('password', 'password error')
     .isLength({ min: 8 })
     .isAlphanumeric()
 ];
