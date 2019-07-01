@@ -1,5 +1,6 @@
 const { body } = require('express-validator/check');
 const userModel = require('../models').user;
+const { databaseError } = require('../errors');
 
 exports.validateSignup = () => [
   body('name', 'name error')
@@ -23,14 +24,16 @@ exports.validateSignup = () => [
 ];
 
 exports.validateEmailExistance = (req, res, next) => {
-  req.user = {};
   userModel
     .findOne({ where: { email: req.body.email } })
     .then(user => {
       if (user) {
         req.user = user;
+        next();
       }
       next();
     })
-    .catch(next);
+    .catch(error => {
+      next(databaseError(error));
+    });
 };

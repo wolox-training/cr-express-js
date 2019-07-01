@@ -7,5 +7,10 @@ exports.init = app => {
   app.get('/health', healthCheck);
   app.get('/albums', albumController.getAllAlbums);
   app.get('/albums/:id/photos', albumController.getPhotosAlbum);
-  app.post('/users', userMiddleware.validateSignup(), userController.register);
+  app.post(
+    '/users',
+    userMiddleware.validateSignup(),
+    userMiddleware.validateEmailExistance,
+    userController.register
+  );
 };

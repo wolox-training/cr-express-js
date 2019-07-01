@@ -11,29 +11,23 @@ exports.register = (req, res, next) => {
   if (errors.isEmpty() === false) {
     console.log(errors);
     next(bad_request_error(errors.array()));
+  }
+  if (req.user) {
+    next(conflict_error('user already exists!'));
   } else {
     userModel
-      .findOne({ where: { email: req.body.email } })
-      .then(user => {
-        if (user) {
-          next(conflict_error('user already exists!'));
-        } else {
-          userModel
-            .create({
-              name: req.body.name,
-              lastName: req.body.lastName,
-              email: req.body.email,
-              password: bcrypt.hashSync(req.body.password, salt)
-            })
-            .then(userCreated => {
-              console.log(`User with name ${userCreated.name} created!!`);
-              res.send(JSON.stringify(userCreated));
-            })
-            .catch(error => {
-              next(databaseError(error));
-            });
-        }
+      .create({
+        name: req.body.name,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        password: bcrypt.hashSync(req.body.password, salt)
       })
-      .catch(error => next(databaseError(error)));
+      .then(userCreated => {
+        console.log(`User with name ${userCreated.name} created!!`);
+        res.send(JSON.stringify(userCreated));
+      })
+      .catch(error => {
+        next(databaseError(error));
+      });
   }
 };
