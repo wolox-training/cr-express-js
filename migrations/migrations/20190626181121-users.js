@@ -11,7 +11,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      lastname: {
+      last_name: {
         type: Sequelize.STRING,
         allowNull: false
       },
@@ -22,6 +22,16 @@ module.exports = {
       },
       password: {
         type: Sequelize.STRING,
+        allowNull: false
+      },
+      created_at: {
+        type: 'TIMESTAMP',
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        allowNull: false
+      },
+      updated_at: {
+        type: 'TIMESTAMP',
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
         allowNull: false
       }
     }),

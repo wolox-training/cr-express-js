@@ -4,6 +4,8 @@ const errors = require('../errors'),
 const DEFAULT_STATUS_CODE = 500;
 
 const statusCodes = {
+  [errors.BAD_REQUEST_ERROR]: 400,
+  [errors.CONFLICT_ERROR]: 409,
   [errors.DATABASE_ERROR]: 503,
   [errors.DEFAULT_ERROR]: 500
 };
