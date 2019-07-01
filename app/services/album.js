@@ -8,7 +8,7 @@ const getAllAlbums = () =>
     .catch(err => Promise.reject(defaultError(err.message)));
 
 const getPhotosAlbum = id =>
-  rp(`${albums_api}albums/${id}/phtos`)
+  rp(`${albums_api}albums/${id}/photos`)
     .then(res => JSON.parse(res))
     .catch(err => Promise.reject(defaultError(err.message)));
 
