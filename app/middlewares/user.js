@@ -4,7 +4,7 @@ exports.validateSignup = () => [
     .not()
     .isEmpty()
     .withMessage('name is required'),
-  body('lastname')
+  body('lastName')
     .not()
     .isEmpty()
     .withMessage('lastname is required'),

@@ -19,7 +19,7 @@ exports.register = (req, res, next) => {
             userModel
               .create({
                 name: req.body.name,
-                lastname: req.body.lastname,
+                lastName: req.body.lastName,
                 email: req.body.email,
                 password: bcrypt.hashSync(req.body.password, salt)
               })
