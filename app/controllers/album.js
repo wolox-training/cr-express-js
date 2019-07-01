@@ -11,11 +11,7 @@ exports.getPhotosAlbum = (req, res, next) => {
   return albumService
     .getPhotosAlbum(id)
     .then(albums => {
-      if (albums) {
-        res.send(albums);
-      } else {
-        next(new Error('NOT FOUND'));
-      }
+      res.send(albums);
     })
     .catch(next);
 };
