@@ -22,6 +22,6 @@ before_script:
   - npm run migrations-test
 # blocklist
 branches:
-except:
-  - apiAlbums
-  - modeloUsuario
+  except:
+    - apiAlbums
+    - modeloUsuario
