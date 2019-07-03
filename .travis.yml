@@ -20,3 +20,9 @@ services:
 before_script:
   - psql -c "CREATE DATABASE bookstest;" -U postgres
   - npm run migrations-test
+# blocklist
+branches:
+  except:
+    - apiAlbums
+    - modeloUsuario
+    - signup

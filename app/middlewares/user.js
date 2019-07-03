@@ -9,9 +9,8 @@ exports.validateSignup = () => [
   body('email', 'email error')
     .isEmail()
     .custom(value => {
-      let aux = value.substr(value.indexOf('@') + 1);
-      aux = aux.substr(0, aux.indexOf('.'));
-      return aux === 'wolox';
+      const aux = value.split('@')[1];
+      return aux === 'wolox.com.ar';
     }),
   body('password', 'password error')
     .isLength({ min: 8 })
