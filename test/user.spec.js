@@ -5,7 +5,7 @@ describe('POST / users', () => {
   const data = {
     name: 'hectooooooor',
     lastName: 'gonzalez',
-    email: 'hector@wolox.com',
+    email: 'hector@wolox.com.ar',
     password: 'abc12345'
   };
   it('should response with the created user', done => {
@@ -30,7 +30,7 @@ describe('POST / users', () => {
 
   it('should reject the request for invalid password', done => {
     const data2 = {
-      email: 'asdadsa@wolox.com',
+      email: 'asdadsa@wolox.com.ar',
       name: 'hectooooooor',
       lastName: 'asdasdasdas',
       password: '12'
