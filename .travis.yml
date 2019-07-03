@@ -8,11 +8,11 @@ sudo: true
 env:
   - CXX=g++-4.8 NODE_ENV=testing
 addons:
-apt:
-sources:
-  - ubuntu-toolchain-r-test
-packages:
-  - g++-4.8
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 
 services:
   - postgresql
@@ -24,3 +24,9 @@ before_script:
 script:
   - npm run lint
   - npm test
+# blocklist
+branches:
+  except:
+    - apiAlbums
+    - modeloUsuario
+    - signup

@@ -1,4 +1,6 @@
 const { body } = require('express-validator/check');
+const { validationResult } = require('express-validator/check');
+
 exports.validateSignup = () => [
   body('name', 'name error')
     .not()
@@ -11,11 +13,15 @@ exports.validateSignup = () => [
     .isEmpty()
     .isEmail()
     .custom(value => {
-      let aux = value.substr(value.indexOf('@') + 1);
-      aux = aux.substr(0, aux.indexOf('.'));
-      return aux === 'wolox';
+      const aux = value.split('@')[1];
+      return aux === 'wolox.com.ar';
     }),
   body('password', 'password error')
     .isLength({ min: 8 })
     .isAlphanumeric()
 ];
+
+exports.validateError = (req, res, next) => {
+  req.validation_errors = validationResult(req);
+  next();
+};
