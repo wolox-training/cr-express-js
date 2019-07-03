@@ -1,15 +1,12 @@
-const { validationResult } = require('express-validator/check');
-// const bcrypt = require('bcryptjs');
-// const salt = bcrypt.genSaltSync(10);
-const { databaseError, badRequestError, conflictError } = require('../errors');
+const { badRequestError, conflictError } = require('../errors');
 const userModel = require('../models').user;
 const encryptionService = require('../services/encryption').encryptPassword;
 const logger = require('.././logger');
+const errorService = require('../services/errors');
 
 exports.register = (req, res, next) => {
-  const errors = validationResult(req);
-  if (errors.isEmpty() === false) {
-    return next(badRequestError(errors.array()));
+  if (!req.validation_errors.isEmpty()) {
+    return next(badRequestError(req.validation_errors.array()));
   }
   return userModel
     .findOne({ where: { email: req.body.email } })
@@ -29,8 +26,10 @@ exports.register = (req, res, next) => {
           res.send(userCreated);
         })
         .catch(error => {
-          next(databaseError(error));
+          next(errorService.handleError(error));
         });
     })
-    .catch(error => next(databaseError(error)));
+    .catch(error => {
+      next(errorService.handleError(error));
+    });
 };
