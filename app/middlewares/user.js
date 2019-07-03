@@ -1,6 +1,5 @@
 const { body } = require('express-validator/check');
-const userModel = require('../models').user;
-const { databaseError } = require('../errors');
+const { validationResult } = require('express-validator/check');
 
 exports.validateSignup = () => [
   body('name', 'name error')
@@ -14,26 +13,15 @@ exports.validateSignup = () => [
     .isEmpty()
     .isEmail()
     .custom(value => {
-      let aux = value.substr(value.indexOf('@') + 1);
-      aux = aux.substr(0, aux.indexOf('.'));
-      return aux === 'wolox';
+      const aux = value.split('@')[1];
+      return aux === 'wolox.com.ar';
     }),
   body('password', 'password error')
     .isLength({ min: 8 })
     .isAlphanumeric()
 ];
 
-exports.validateEmailExistance = (req, res, next) => {
-  userModel
-    .findOne({ where: { email: req.body.email } })
-    .then(user => {
-      if (user) {
-        req.user = user;
-        next();
-      }
-      next();
-    })
-    .catch(error => {
-      next(databaseError(error));
-    });
+exports.validateError = (req, res, next) => {
+  req.validation_errors = validationResult(req);
+  next();
 };

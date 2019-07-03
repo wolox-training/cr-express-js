@@ -45,6 +45,9 @@ const config = {
   },
   api_services: {
     albums_api: process.env.ALBUMS_API
+  },
+  encryption: {
+    salt_sync: process.env.BCRYPT_SALT
   }
 };
 
