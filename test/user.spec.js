@@ -54,3 +54,61 @@ describe('POST / users', () => {
       .expect(400, done());
   });
 });
+
+describe('POST /users/sessions', () => {
+  const data = {
+    name: 'hectooooooor',
+    lastName: 'gonzalez',
+    email: 'hector@wolox.com.ar',
+    password: 'abc12345'
+  };
+  it('should response with the generated token', done => {
+    const signInData = {
+      email: 'hector@wolox.com.ar',
+      password: 'abc12345'
+    };
+    request(app)
+      .post('/users')
+      .send(data)
+      .then(
+        request(app)
+          .post('/users/sessions')
+          .send(signInData)
+          .expect(200, done())
+      )
+      .catch(done());
+  });
+
+  it('should response with 400 code error because uncompleted fields', done => {
+    const signInData = {
+      email: 'hectorwolox.com.ar',
+      password: ''
+    };
+    request(app)
+      .post('/users/sessions')
+      .send(signInData)
+      .expect(400, done());
+  });
+
+  it('should response with 400 code error becasuse invalid password', done => {
+    const signInData = {
+      email: 'hector@wolox.com.ar',
+      password: 'asasdasdasds3'
+    };
+    request(app)
+      .post('/users/sessions')
+      .send(signInData)
+      .expect(400, done());
+  });
+
+  it('should reponse with 404 code error because the user with the requested email was not found', done => {
+    const signInData = {
+      email: 'hector@wolox.com.ar',
+      password: 'asasdasdasds3'
+    };
+    request(app)
+      .post('/users/sessions')
+      .send(signInData)
+      .expect(404, done());
+  });
+});

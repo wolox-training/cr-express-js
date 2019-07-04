@@ -21,6 +21,20 @@ exports.validateSignup = () => [
     .isAlphanumeric()
 ];
 
+exports.validateSignin = () => [
+  body('email', 'email error')
+    .not()
+    .isEmpty()
+    .isEmail()
+    .custom(value => {
+      const aux = value.split('@')[1];
+      return aux === 'wolox.com.ar';
+    }),
+  body('password', 'password error')
+    .isLength({ min: 8 })
+    .isAlphanumeric()
+];
+
 exports.validateError = (req, res, next) => {
   req.validation_errors = validationResult(req);
   next();
