@@ -1,5 +1,6 @@
 const { body } = require('express-validator/check');
 const { validationResult } = require('express-validator/check');
+const { badRequestError } = require('../errors');
 
 exports.validateSignup = () => [
   body('name', 'name error')
@@ -20,6 +21,9 @@ exports.validateSignup = () => [
 ];
 
 exports.validateError = (req, res, next) => {
-  req.validation_errors = validationResult(req);
-  next();
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(badRequestError(errors.array()));
+  }
+  return next();
 };
