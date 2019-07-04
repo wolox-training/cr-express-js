@@ -31,10 +31,7 @@ exports.register = (req, res, next) =>
     });
 
 exports.signIn = (req, res, next) => {
-  if (!req.validation_errors.isEmpty()) {
-    return next(badRequestError(req.validation_errors.array()));
-  }
-  return userModel
+  userModel
     .findOne({ where: { email: req.body.email } })
     .then(user => {
       if (user) {
