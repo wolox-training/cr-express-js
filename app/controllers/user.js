@@ -1,15 +1,11 @@
-const { badRequestError, conflictError, notFoundError } = require('../errors');
+const { defaultError, badRequestError, conflictError, notFoundError } = require('../errors');
 const userModel = require('../models').user;
 const encryptionService = require('../services/encryption');
 const logger = require('.././logger');
-const errorService = require('../services/errors');
 const authenticationService = require('../services/authentication');
 
-exports.register = (req, res, next) => {
-  if (!req.validation_errors.isEmpty()) {
-    return next(badRequestError(req.validation_errors.array()));
-  }
-  return userModel
+exports.register = (req, res, next) =>
+  userModel
     .findOne({ where: { email: req.body.email } })
     .then(user => {
       if (user) {
@@ -27,13 +23,12 @@ exports.register = (req, res, next) => {
           res.send(userCreated);
         })
         .catch(error => {
-          next(errorService.handleError(error));
+          next(defaultError(error));
         });
     })
     .catch(error => {
-      next(errorService.handleError(error));
+      next(defaultError(error));
     });
-};
 
 exports.signIn = (req, res, next) => {
   if (!req.validation_errors.isEmpty()) {
@@ -51,6 +46,6 @@ exports.signIn = (req, res, next) => {
       next(notFoundError('User not found'));
     })
     .catch(err => {
-      next(errorService.handleError(err));
+      next(defaultError(err));
     });
 };
