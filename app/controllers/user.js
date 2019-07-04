@@ -1,14 +1,10 @@
-const { badRequestError, conflictError } = require('../errors');
+const { conflictError, defaultError } = require('../errors');
 const userModel = require('../models').user;
 const encryptionService = require('../services/encryption').encryptPassword;
 const logger = require('.././logger');
-const errorService = require('../services/errors');
 
-exports.register = (req, res, next) => {
-  if (!req.validation_errors.isEmpty()) {
-    return next(badRequestError(req.validation_errors.array()));
-  }
-  return userModel
+exports.register = (req, res, next) =>
+  userModel
     .findOne({ where: { email: req.body.email } })
     .then(user => {
       if (user) {
@@ -26,10 +22,9 @@ exports.register = (req, res, next) => {
           res.send(userCreated);
         })
         .catch(error => {
-          next(errorService.handleError(error));
+          next(defaultError(error));
         });
     })
     .catch(error => {
-      next(errorService.handleError(error));
+      next(defaultError(error));
     });
-};
