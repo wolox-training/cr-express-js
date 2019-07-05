@@ -46,3 +46,17 @@ exports.signIn = (req, res, next) => {
       next(defaultError(err));
     });
 };
+
+exports.getAllUsers = (req, res, next) => {
+  const { limit } = req.query;
+  const { page } = req.query;
+  const offset = (page - 1) * limit;
+  userModel
+    .findAll({ limit, offset, order: ['name'] })
+    .then(users => {
+      res.send(users);
+    })
+    .catch(err => {
+      next(defaultError(err));
+    });
+};
