@@ -112,3 +112,21 @@ describe('POST /users/sessions', () => {
       .expect(404, done());
   });
 });
+
+describe('GET /users', () => {
+  it('should response with 200 code', done => {
+    request(app)
+      .get('/users')
+      .expect(200, done());
+  });
+  it('should response with 200 code', done => {
+    request(app)
+      .get('/users?limit=10?page=1')
+      .expect(200, done());
+  });
+  it('should response with 200 code when the response should not show anything', done => {
+    request(app)
+      .get('/users?limit=10?page=4')
+      .expect(200, done());
+  });
+});

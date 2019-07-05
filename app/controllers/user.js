@@ -48,8 +48,8 @@ exports.signIn = (req, res, next) => {
 };
 
 exports.getAllUsers = (req, res, next) => {
-  const { limit } = req.query;
-  const { page } = req.query;
+  const limit = req.query.limit || 10;
+  const page = req.query.page || 1;
   const offset = (page - 1) * limit;
   userModel
     .findAll({ limit, offset, order: ['name'] })
