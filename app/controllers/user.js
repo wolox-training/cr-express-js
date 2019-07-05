@@ -2,19 +2,16 @@ const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
 
 exports.register = (req, res, next) => {
+  const user = {
+    email: req.body.email,
+    name: req.body.email,
+    lastName: req.body.lastName,
+    password: encryptionService.encryptPassword(req.body.password)
+  };
   userService
-    .findOne(req.body.email)
-    .then(() => {
-      userService
-        .createUser(
-          req.body.email,
-          req.body.name,
-          req.body.lastName,
-          encryptionService.encryptPassword(req.body.password)
-        )
-        .then(userCreated => {
-          res.send(userCreated);
-        });
+    .createUser(user)
+    .then(userCreated => {
+      res.send(userCreated);
     })
     .catch(next);
 };
