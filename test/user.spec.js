@@ -75,7 +75,7 @@ describe('POST /users/sessions  - signIn user', () => {
     email: 'hector@wolox.com.ar',
     password: 'abc12345'
   };
-  it('should succeed returning the generated token', done => {
+  it('should succeed returning the generated token', () => {
     const signInData = {
       email: 'hector@wolox.com.ar',
       password: 'abc12345'
@@ -83,16 +83,20 @@ describe('POST /users/sessions  - signIn user', () => {
     request(app)
       .post('/users')
       .send(user)
-      .then(
-        request(app)
-          .post('/users/sessions')
-          .send(signInData)
-          .expect(200, done())
-      )
-      .catch(done());
+      .then(res => {
+        expect(res.status).toBe(201);
+        expect(res.body.email).toBe(user.email);
+      });
+    request(app)
+      .post('/users/sessions')
+      .send(signInData)
+      .then(res => {
+        expect(res.status).toBe(200);
+        expect(res.body.token);
+      });
   });
 
-  it('should fail returning 400 code error because uncompleted fields', done => {
+  it('should fail returning 400 code error because uncompleted fields', () => {
     const signInData = {
       email: 'hectorwolox.com.ar',
       password: ''
@@ -100,10 +104,30 @@ describe('POST /users/sessions  - signIn user', () => {
     request(app)
       .post('/users/sessions')
       .send(signInData)
-      .expect(400, done());
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.internal_code).toBe('bad_request_error');
+      });
   });
 
-  it('should fail returning 400 code error becasuse invalid password', done => {
+  it('should fail returning 400 code error because invalid password', () => {
+    const signInData = {
+      email: 'hector@wolox.com.ar',
+      password: 'asdasdasd5'
+    };
+    request(app)
+      .post('/users')
+      .send(user);
+    request(app)
+      .post('/users/sessions')
+      .send(signInData)
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.internal_code).toBe('bad_request_error');
+      });
+  });
+
+  it('should fail returning 404 code error because the user with the requested email was not found', () => {
     const signInData = {
       email: 'hector@wolox.com.ar',
       password: 'asasdasdasds3'
@@ -111,17 +135,9 @@ describe('POST /users/sessions  - signIn user', () => {
     request(app)
       .post('/users/sessions')
       .send(signInData)
-      .expect(400, done());
-  });
-
-  it('should fail returning 404 code error because the user with the requested email was not found', done => {
-    const signInData = {
-      email: 'hector@wolox.com.ar',
-      password: 'asasdasdasds3'
-    };
-    request(app)
-      .post('/users/sessions')
-      .send(signInData)
-      .expect(404, done());
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.internal_code).toBe('bad_request_error');
+      });
   });
 });
