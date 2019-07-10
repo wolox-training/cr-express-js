@@ -1,8 +1,9 @@
 const request = require('supertest');
 const app = require('.././app');
+const userModel = require('../app/models').user;
 
-describe('POST / signup users', () => {
-  const user = {
+describe('POST /signup - create users', () => {
+  const userData = {
     email: 'jose@wolox.com.ar',
     name: 'jose',
     lastName: 'perez',
@@ -12,32 +13,38 @@ describe('POST / signup users', () => {
   it('should succeed returning the created user', () => {
     request(app)
       .post('/users')
-      .send(user)
+      .send(userData)
       .then(res => {
         expect(res.status).toBe(201);
-        expect(res.body.email).toBe(user.email);
+        expect(res.body.email).toBe(userData.email);
+        userModel.findOne({ where: { email: userData.email } }).then(user => {
+          console.log(user);
+          expect(user.email).toBe(userData.email);
+        });
       });
   });
 
   test('should fail for the existence of the email', () => {
-    request(app)
-      .post('/users')
-      .send(user)
-      .then(res => {
-        expect(res.status).toBe(201);
-        expect(res.body.email).toBe(user.email);
-      });
-    request(app)
-      .post('/users')
-      .send(user)
-      .then(res => {
-        expect(res.status).toBe(409);
-        expect(res.body.internal_code).toBe('conflict_error');
+    userModel
+      .create({
+        email: userData.email,
+        name: userData.name,
+        lastName: userData.lastName,
+        password: userData.password
+      })
+      .then(() => {
+        request(app)
+          .post('/users')
+          .send(userData)
+          .then(res => {
+            expect(res.status).toBe(409);
+            expect(res.body.internal_code).toBe('conflict_error');
+          });
       });
   });
 
   it('should fail for invalid password', () => {
-    const user2 = {
+    const userDataWrongPassword = {
       email: 'asdadsa@wolox.com.ar',
       name: 'hector',
       lastName: 'asdasdasdas',
@@ -45,14 +52,14 @@ describe('POST / signup users', () => {
     };
     request(app)
       .post('/users')
-      .send(user2)
+      .send(userDataWrongPassword)
       .then(res => {
         expect(res.status).toBe(400);
         expect(res.body.internal_code).toBe('bad_request_error');
       });
   });
   it('should fail for uncompleted fields', () => {
-    const user3 = {
+    const userDataUncompletedFields = {
       email: '',
       name: 'hector',
       lastName: '',
@@ -60,7 +67,7 @@ describe('POST / signup users', () => {
     };
     request(app)
       .post('/users')
-      .send(user3)
+      .send(userDataUncompletedFields)
       .then(res => {
         expect(res.status).toBe(400);
         expect(res.body.internal_code).toBe('bad_request_error');
