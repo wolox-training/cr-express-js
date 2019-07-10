@@ -18,7 +18,6 @@ describe('POST /signup - create users', () => {
         expect(res.status).toBe(201);
         expect(res.body.email).toBe(userData.email);
         userModel.findOne({ where: { email: userData.email } }).then(user => {
-          console.log(user);
           expect(user.email).toBe(userData.email);
         });
       });
