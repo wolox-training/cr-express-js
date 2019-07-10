@@ -1,30 +1,17 @@
-const { conflictError, defaultError } = require('../errors');
-const userModel = require('../models').user;
-const encryptionService = require('../services/encryption').encryptPassword;
-const logger = require('.././logger');
+const encryptionService = require('../services/encryption');
+const userService = require('../services/user');
 
-exports.register = (req, res, next) =>
-  userModel
-    .findOne({ where: { email: req.body.email } })
-    .then(user => {
-      if (user) {
-        return next(conflictError('user already exists!'));
-      }
-      return userModel
-        .create({
-          name: req.body.name,
-          lastName: req.body.lastName,
-          email: req.body.email,
-          password: encryptionService(req.body.password)
-        })
-        .then(userCreated => {
-          logger.info(`User with name ${userCreated.name} created!!`);
-          res.send(userCreated);
-        })
-        .catch(error => {
-          next(defaultError(error));
-        });
+exports.register = (req, res, next) => {
+  const user = {
+    email: req.body.email,
+    name: req.body.email,
+    lastName: req.body.lastName,
+    password: encryptionService.encryptPassword(req.body.password)
+  };
+  return userService
+    .createUser(user)
+    .then(userCreated => {
+      res.send(201, userCreated);
     })
-    .catch(error => {
-      next(defaultError(error));
-    });
+    .catch(next);
+};
