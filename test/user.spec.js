@@ -137,3 +137,9 @@ describe('GET /users', () => {
       .expect(200, done());
   });
 });
+
+describe('POST /admin/users signup admin users or update the user role to admin', () => {
+  it('should succeed return 201 creating an user wich role is admin', () => {
+    console.log('go');
+  });
+});
