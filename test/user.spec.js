@@ -1,56 +1,63 @@
 const request = require('supertest');
 const app = require('.././app');
 
-describe('POST / users', () => {
-  const data = {
-    name: 'hectooooooor',
-    lastName: 'gonzalez',
-    email: 'hector@wolox.com.ar',
-    password: 'abc12345'
+describe('POST / signup users', () => {
+  const user = {
+    email: 'jose@wolox.com.ar',
+    name: 'jose',
+    lastName: 'perez',
+    password: 'asdasdasd654'
   };
-  it('should response with the created user', done => {
+
+  it('should succeed returning the created user', () => {
     request(app)
       .post('/users')
-      .send(data)
-      .expect(200, done());
+      .send(user)
+      .then(res => {
+        expect(res.status).toBe(201);
+        expect(res.body.email).toBe(user.email);
+      });
   });
 
-  it('should reject the request for the existence of the email', done => {
+  test('should fail for the existence of the email', () => {
     request(app)
       .post('/users')
-      .send(data)
-      .then(
-        request(app)
-          .post('/users')
-          .send(data)
-          .expect(409, done())
-      )
-      .catch(done());
+      .send(user)
+      .then(res => {
+        expect(res.status).toBe(201);
+        expect(res.body.email).toBe(user.email);
+      });
+    request(app)
+      .post('/users')
+      .send(user)
+      .then(res => {
+        expect(res.status).toBe(409);
+        expect(res.body.internal_code).toBe('conflict_error');
+      });
   });
 
-  it('should reject the request for invalid password', done => {
-    const data2 = {
+  it('should fail for invalid password', done => {
+    const user2 = {
       email: 'asdadsa@wolox.com.ar',
-      name: 'hectooooooor',
+      name: 'hector',
       lastName: 'asdasdasdas',
       password: '12'
     };
     request(app)
       .post('/users')
-      .send(data2)
+      .send(user2)
       .expect(400, done());
   });
-
-  it('should reject the request for uncompleted fields', done => {
-    const data3 = {
+  it('should fail for uncompleted fields', done => {
+    const user3 = {
       email: '',
-      name: 'hectooooooor',
+      name: 'hector',
       lastName: '',
       password: 'abc12345'
     };
     request(app)
       .post('/users')
-      .send(data3)
+      .send(user3)
       .expect(400, done());
   });
 });
