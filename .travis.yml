@@ -24,9 +24,3 @@ before_script:
 script:
   - npm run lint
   - npm test
-# blocklist
-branches:
-  except:
-    - apiAlbums
-    - modeloUsuario
-    - signup
