@@ -23,6 +23,4 @@ before_script:
 # blocklist
 branches:
   except:
-    - apiAlbums
-    - modeloUsuario
-    - signup
+    - master
