@@ -23,4 +23,5 @@ before_script:
 # blocklist
 branches:
   except:
+    - signup
     - master
