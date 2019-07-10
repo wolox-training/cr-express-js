@@ -34,17 +34,14 @@ exports.signIn = (req, res, next) => {
 };
 
 exports.getAllUsers = (req, res, next) => {
-  // const limit = req.query.limit || 10;
-  // const page = req.query.page || 1;
-  // const offset = (page - 1) * limit;
-  /* userModel
-    .findAll({ limit, offset, order: ['name'] })
+  const limit = req.query.limit || 10;
+  const page = req.query.page || 1;
+  const offset = (page - 1) * limit;
+  const orderBy = req.query.orderBy || 'name';
+  userService
+    .findAllPagination(limit, offset, orderBy)
     .then(users => {
       res.send(users);
     })
-    .catch(err => {
-      next(defaultError(err));
-    });*/
-  res.send('');
-  next();
+    .catch(next);
 };

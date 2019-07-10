@@ -2,6 +2,14 @@ const { conflictError, databaseError } = require('../errors');
 const userModel = require('../models').user;
 const logger = require('.././logger');
 
+exports.findAllPagination = (limit, offset, orderField) =>
+  userModel
+    .findAll({ limit, offset, order: [orderField] })
+    .then(users => users)
+    .catch(error => {
+      throw databaseError(error);
+    });
+
 exports.findOne = email =>
   userModel
     .findOne({ where: { email } })
