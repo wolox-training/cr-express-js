@@ -8,7 +8,7 @@ exports.register = (req, res, next) => {
     lastName: req.body.lastName,
     password: encryptionService.encryptPassword(req.body.password)
   };
-  userService
+  return userService
     .createUser(user)
     .then(userCreated => {
       res.send(userCreated);
