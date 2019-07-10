@@ -1,62 +1,50 @@
-const { defaultError, badRequestError, conflictError, notFoundError } = require('../errors');
-const userModel = require('../models').user;
-const encryptionService = require('../services/encryption');
-const logger = require('.././logger');
+const { badRequestError, notFoundError } = require('../errors');
 const authenticationService = require('../services/authentication');
+const encryptionService = require('../services/encryption');
+const userService = require('../services/user');
 
-exports.register = (req, res, next) =>
-  userModel
-    .findOne({ where: { email: req.body.email } })
-    .then(user => {
-      if (user) {
-        return next(conflictError('user already exists!'));
-      }
-      return userModel
-        .create({
-          name: req.body.name,
-          lastName: req.body.lastName,
-          email: req.body.email,
-          password: encryptionService.encryptPassword(req.body.password)
-        })
-        .then(userCreated => {
-          logger.info(`User with name ${userCreated.name} created!!`);
-          res.send(userCreated);
-        })
-        .catch(error => {
-          next(defaultError(error));
-        });
+exports.register = (req, res, next) => {
+  const user = {
+    email: req.body.email,
+    name: req.body.email,
+    lastName: req.body.lastName,
+    password: encryptionService.encryptPassword(req.body.password)
+  };
+  return userService
+    .createUser(user)
+    .then(userCreated => {
+      res.send(201, userCreated);
     })
-    .catch(error => {
-      next(defaultError(error));
-    });
+    .catch(next);
+};
 
 exports.signIn = (req, res, next) => {
-  userModel
-    .findOne({ where: { email: req.body.email } })
+  userService
+    .findOne(req.body.email)
     .then(user => {
       if (user) {
         if (encryptionService.validatePasssword(req.body.password, user.password)) {
           res.send(authenticationService.generateToken(user));
         }
-        next(badRequestError('Invalid password'));
+        throw badRequestError('Invalid password');
       }
-      next(notFoundError('User not found'));
+      throw notFoundError('User not found');
     })
-    .catch(err => {
-      next(defaultError(err));
-    });
+    .catch(next);
 };
 
 exports.getAllUsers = (req, res, next) => {
-  const limit = req.query.limit || 10;
-  const page = req.query.page || 1;
-  const offset = (page - 1) * limit;
-  userModel
+  // const limit = req.query.limit || 10;
+  // const page = req.query.page || 1;
+  // const offset = (page - 1) * limit;
+  /* userModel
     .findAll({ limit, offset, order: ['name'] })
     .then(users => {
       res.send(users);
     })
     .catch(err => {
       next(defaultError(err));
-    });
+    });*/
+  res.send('');
+  next();
 };
