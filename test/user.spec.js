@@ -10,7 +10,7 @@ describe('POST /signup - create users', () => {
     password: 'asdasdasd654'
   };
 
-  it('should succeed returning the created user', () => {
+  it('should succeed returning the created user', done => {
     request(app)
       .post('/users')
       .send(userData)
@@ -19,11 +19,12 @@ describe('POST /signup - create users', () => {
         expect(res.body.email).toBe(userData.email);
         userModel.findOne({ where: { email: userData.email } }).then(user => {
           expect(user.email).toBe(userData.email);
+          done();
         });
       });
   });
 
-  test('should fail for the existence of the email', () => {
+  it('should fail for the existence of the email', done => {
     userModel
       .create({
         email: userData.email,
@@ -38,11 +39,12 @@ describe('POST /signup - create users', () => {
           .then(res => {
             expect(res.status).toBe(409);
             expect(res.body.internal_code).toBe('conflict_error');
+            done();
           });
       });
   });
 
-  it('should fail for invalid password', () => {
+  it('should fail for invalid password', done => {
     const userDataWrongPassword = {
       email: 'asdadsa@wolox.com.ar',
       name: 'hector',
@@ -55,9 +57,10 @@ describe('POST /signup - create users', () => {
       .then(res => {
         expect(res.status).toBe(400);
         expect(res.body.internal_code).toBe('bad_request_error');
+        done();
       });
   });
-  it('should fail for uncompleted fields', () => {
+  it('should fail for uncompleted fields', done => {
     const userDataUncompletedFields = {
       email: '',
       name: 'hector',
@@ -70,6 +73,7 @@ describe('POST /signup - create users', () => {
       .then(res => {
         expect(res.status).toBe(400);
         expect(res.body.internal_code).toBe('bad_request_error');
+        done();
       });
   });
 });
