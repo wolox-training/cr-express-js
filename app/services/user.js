@@ -2,6 +2,14 @@ const { conflictError, databaseError } = require('../errors');
 const userModel = require('../models').user;
 const logger = require('.././logger');
 
+exports.findOne = email =>
+  userModel
+    .findOne({ where: { email } })
+    .then(user => user)
+    .catch(error => {
+      throw databaseError(error);
+    });
+
 exports.createUser = user =>
   userModel
     .create({
