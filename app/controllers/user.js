@@ -32,20 +32,3 @@ exports.signIn = (req, res, next) => {
     })
     .catch(next);
 };
-
-/* exports.signIn = (req, res, next) => {
-  userModel
-    .findOne({ where: { email: req.body.email } })
-    .then(user => {
-      if (user) {
-        if (encryptionService.validatePasssword(req.body.password, user.password)) {
-          res.send(authenticationService.generateToken(user));
-        }
-        next(badRequestError('Invalid password'));
-      }
-      next(notFoundError('User not found'));
-    })
-    .catch(err => {
-      next(defaultError(err));
-    });
-};*/

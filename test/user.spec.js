@@ -62,21 +62,21 @@ describe('POST / signup users', () => {
   });
 });
 
-describe('POST /users/sessions', () => {
-  const data = {
-    name: 'hectooooooor',
+describe('POST /users/sessions  - signIn user', () => {
+  const user = {
+    name: 'hector',
     lastName: 'gonzalez',
     email: 'hector@wolox.com.ar',
     password: 'abc12345'
   };
-  it('should response with the generated token', done => {
+  it('should succeed returning the generated token', done => {
     const signInData = {
       email: 'hector@wolox.com.ar',
       password: 'abc12345'
     };
     request(app)
       .post('/users')
-      .send(data)
+      .send(user)
       .then(
         request(app)
           .post('/users/sessions')
@@ -86,7 +86,7 @@ describe('POST /users/sessions', () => {
       .catch(done());
   });
 
-  it('should response with 400 code error because uncompleted fields', done => {
+  it('should fail returning 400 code error because uncompleted fields', done => {
     const signInData = {
       email: 'hectorwolox.com.ar',
       password: ''
@@ -97,7 +97,7 @@ describe('POST /users/sessions', () => {
       .expect(400, done());
   });
 
-  it('should response with 400 code error becasuse invalid password', done => {
+  it('should fail returning 400 code error becasuse invalid password', done => {
     const signInData = {
       email: 'hector@wolox.com.ar',
       password: 'asasdasdasds3'
@@ -108,7 +108,7 @@ describe('POST /users/sessions', () => {
       .expect(400, done());
   });
 
-  it('should reponse with 404 code error because the user with the requested email was not found', done => {
+  it('should fail returning 404 code error because the user with the requested email was not found', done => {
     const signInData = {
       email: 'hector@wolox.com.ar',
       password: 'asasdasdasds3'
