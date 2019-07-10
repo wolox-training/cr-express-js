@@ -18,6 +18,31 @@ exports.register = (req, res, next) => {
     .catch(next);
 };
 
+exports.registerAdmin = (req, res, next) => {
+  const user = {
+    email: req.body.email,
+    name: req.body.email,
+    lastName: req.body.lastName,
+    password: encryptionService.encryptPassword(req.body.password),
+    role: 'admin'
+  };
+  userService
+    .findOne(user.email)
+    .then(usr => {
+      if (usr) {
+        usr.role = 'admin';
+        userService.updateUserRole(usr).then(updatedUser => {
+          res.send(200, updatedUser);
+        });
+      } else {
+        userService.createUser(user).then(createdUser => {
+          res.send(201, createdUser);
+        });
+      }
+    })
+    .catch(next);
+};
+
 exports.signIn = (req, res, next) => {
   userService
     .findOne(req.body.email)

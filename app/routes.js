@@ -19,4 +19,9 @@ exports.init = app => {
     userController.signIn
   );
   app.get('/users', [authenticationMiddleware.verifyToken], userController.getAllUsers);
+  app.post(
+    '/admin/users',
+    [userMiddleware.validateSignup(), userMiddleware.validateError],
+    userController.registerAdmin
+  );
 };

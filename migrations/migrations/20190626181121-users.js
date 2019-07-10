@@ -29,6 +29,11 @@ module.exports = {
       },
       updated_at: {
         type: Sequelize.DATE
+      },
+      role: {
+        type: Sequelize.ENUM(['regular', 'admin']),
+        allowNull: false,
+        defaultValue: 'regular'
       }
     }),
   down: queryInterface => queryInterface.dropTable('users')

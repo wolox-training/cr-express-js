@@ -24,7 +24,8 @@ exports.createUser = user =>
       email: user.email,
       name: user.name,
       lastName: user.lastName,
-      password: user.password
+      password: user.password,
+      role: user.role
     })
     .then(userCreated => {
       logger.info(`user with name ${userCreated.name} created!`);
@@ -35,5 +36,13 @@ exports.createUser = user =>
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw conflictError('user already exists!');
       }
+      throw databaseError(error);
+    });
+
+exports.updateUserRole = user =>
+  user
+    .save()
+    .then(updatedUser => updatedUser)
+    .catch(error => {
       throw databaseError(error);
     });
