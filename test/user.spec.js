@@ -36,7 +36,7 @@ describe('POST / signup users', () => {
       });
   });
 
-  it('should fail for invalid password', done => {
+  it('should fail for invalid password', () => {
     const user2 = {
       email: 'asdadsa@wolox.com.ar',
       name: 'hector',
@@ -46,9 +46,12 @@ describe('POST / signup users', () => {
     request(app)
       .post('/users')
       .send(user2)
-      .expect(400, done());
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.internal_code).toBe('bad_request_error');
+      });
   });
-  it('should fail for uncompleted fields', done => {
+  it('should fail for uncompleted fields', () => {
     const user3 = {
       email: '',
       name: 'hector',
@@ -58,7 +61,10 @@ describe('POST / signup users', () => {
     request(app)
       .post('/users')
       .send(user3)
-      .expect(400, done());
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.internal_code).toBe('bad_request_error');
+      });
   });
 });
 
