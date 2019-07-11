@@ -7,15 +7,14 @@ const createUser = user =>
     .post('/users')
     .send(user)
     .then(userCreated => userCreated);
+const userData = {
+  email: 'jose@wolox.com.ar',
+  name: 'jose',
+  lastName: 'perez',
+  password: 'asdasdasd654'
+};
 
 describe('POST /signup - create users', () => {
-  const userData = {
-    email: 'jose@wolox.com.ar',
-    name: 'jose',
-    lastName: 'perez',
-    password: 'asdasdasd654'
-  };
-
   it('should succeed returning the created user', done => {
     createUser(userData).then(res => {
       expect(res.status).toBe(201);
@@ -170,8 +169,36 @@ describe('GET /users - list of users', () => {
   });
 });
 
-describe('POST /admin/users signup admin users or update the user role to admin', () => {
-  it('should succeed return 201 creating an user wich role is admin', () => {
-    console.log('go');
+describe('POST /admin/users - signup admin users or update the user role to admin', () => {
+  const createUserAdmin = user =>
+    request(app)
+      .post('/admin/users')
+      .send(user)
+      .then(createdUser => createdUser);
+
+  it('should succeed returning 201 creating an user wich role is admin', done => {
+    createUserAdmin(userData).then(res => {
+      expect(res.status).toBe(201);
+      expect(res.body.role).toBe('admin');
+      userModel.findOne({ where: { email: userData.email } }).then(user => {
+        expect(user.role).toBe('admin');
+        done();
+      });
+    });
+  });
+
+  it('should succeed returning 200 code updating an user wich role is regular', done => {
+    createUser(userData).then(res => {
+      expect(res.status).toBe(201);
+      expect(res.body.role).toBe('regular');
+      createUserAdmin(userData).then(response => {
+        expect(response.status).toBe(200);
+        expect(response.body.role).toBe('admin');
+        userModel.findOne({ where: { email: userData.email } }).then(user => {
+          expect(user.role).toBe('admin');
+          done();
+        });
+      });
+    });
   });
 });
