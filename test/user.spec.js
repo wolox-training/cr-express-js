@@ -133,17 +133,21 @@ describe('POST /users/sessions  - signIn user', () => {
     });
   });
 
-  it('should fail returning 404 code error because the user with the requested email was not found', () => {
+  it('should fail returning 404 code error because the user with the requested email was not found', done => {
     const signInData = {
       email: 'hector@wolox.com.ar',
       password: 'asasdasdasds3'
     };
-    request(app)
-      .post('/users/sessions')
-      .send(signInData)
-      .then(res => {
-        expect(res.status).toBe(400);
-        expect(res.body.internal_code).toBe('bad_request_error');
-      });
+    createUser(user).then(res => {
+      expect(res.status).toBe(201);
+      request(app)
+        .post('/users/sessions')
+        .send(signInData)
+        .then(response => {
+          expect(response.status).toBe(400);
+          expect(response.body.internal_code).toBe('bad_request_error');
+          done();
+        });
+    });
   });
 });
