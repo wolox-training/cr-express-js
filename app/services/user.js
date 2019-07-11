@@ -7,6 +7,7 @@ exports.findAllPagination = (limit, offset, orderField) =>
     .findAll({ limit, offset, order: [orderField] })
     .then(users => users)
     .catch(error => {
+      logger.info(error);
       throw databaseError(error);
     });
 
