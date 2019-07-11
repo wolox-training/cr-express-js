@@ -13,25 +13,24 @@ exports.register = (req, res, next) => {
   return userService
     .createUser(user)
     .then(userCreated => {
-      res.send(201, userCreated);
+      res.status(201).send(userCreated);
     })
     .catch(next);
 };
 
-exports.signIn = (req, res, next) => {
+exports.signIn = (req, res, next) =>
   userService
     .findOne(req.body.email)
     .then(user => {
       if (user) {
         if (encryptionService.validatePasssword(req.body.password, user.password)) {
-          res.send(authenticationService.generateToken(user));
+          return res.send(authenticationService.generateToken(user));
         }
         throw badRequestError('Invalid password');
       }
       throw notFoundError('User not found');
     })
     .catch(next);
-};
 
 exports.getAllUsers = (req, res, next) => {
   const limit = req.query.limit || 10;

@@ -1,64 +1,77 @@
 const request = require('supertest');
 const app = require('.././app');
+const userModel = require('../app/models').user;
 
-describe('POST / signup users', () => {
-  const user = {
+const createUser = user =>
+  request(app)
+    .post('/users')
+    .send(user)
+    .then(userCreated => userCreated);
+
+describe('POST /signup - create users', () => {
+  const userData = {
     email: 'jose@wolox.com.ar',
     name: 'jose',
     lastName: 'perez',
     password: 'asdasdasd654'
   };
 
-  it('should succeed returning the created user', () => {
-    request(app)
-      .post('/users')
-      .send(user)
-      .then(res => {
-        expect(res.status).toBe(201);
-        expect(res.body.email).toBe(user.email);
+  it('should succeed returning the created user', done => {
+    createUser(userData).then(res => {
+      expect(res.status).toBe(201);
+      expect(res.body.email).toBe(userData.email);
+      userModel.findOne({ where: { email: userData.email } }).then(user => {
+        expect(user.email).toBe(userData.email);
+        done();
       });
+    });
   });
 
-  test('should fail for the existence of the email', () => {
-    request(app)
-      .post('/users')
-      .send(user)
-      .then(res => {
-        expect(res.status).toBe(201);
-        expect(res.body.email).toBe(user.email);
-      });
-    request(app)
-      .post('/users')
-      .send(user)
-      .then(res => {
-        expect(res.status).toBe(409);
-        expect(res.body.internal_code).toBe('conflict_error');
+  it('should fail for the existence of the email', done => {
+    userModel
+      .create({
+        email: userData.email,
+        name: userData.name,
+        lastName: userData.lastName,
+        password: userData.password
+      })
+      .then(() => {
+        request(app)
+          .post('/users')
+          .send(userData)
+          .then(res => {
+            expect(res.status).toBe(409);
+            expect(res.body.internal_code).toBe('conflict_error');
+            done();
+          });
       });
   });
 
   it('should fail for invalid password', done => {
-    const user2 = {
+    const userDataWrongPassword = {
       email: 'asdadsa@wolox.com.ar',
       name: 'hector',
       lastName: 'asdasdasdas',
       password: '12'
     };
-    request(app)
-      .post('/users')
-      .send(user2)
-      .expect(400, done());
+    createUser(userDataWrongPassword).then(res => {
+      expect(res.status).toBe(400);
+      expect(res.body.internal_code).toBe('bad_request_error');
+      done();
+    });
   });
   it('should fail for uncompleted fields', done => {
-    const user3 = {
+    const userDataUncompletedFields = {
       email: '',
       name: 'hector',
       lastName: '',
       password: 'abc12345'
     };
-    request(app)
-      .post('/users')
-      .send(user3)
-      .expect(400, done());
+    createUser(userDataUncompletedFields).then(res => {
+      expect(res.status).toBe(400);
+      expect(res.body.internal_code).toBe('bad_request_error');
+      done();
+    });
   });
 });
 
@@ -74,16 +87,17 @@ describe('POST /users/sessions  - signIn user', () => {
       email: 'hector@wolox.com.ar',
       password: 'abc12345'
     };
-    request(app)
-      .post('/users')
-      .send(user)
-      .then(
-        request(app)
-          .post('/users/sessions')
-          .send(signInData)
-          .expect(200, done())
-      )
-      .catch(done());
+    createUser(user).then(res => {
+      expect(res.status).toBe(201);
+      request(app)
+        .post('/users/sessions')
+        .send(signInData)
+        .then(response => {
+          expect(response.status).toBe(200);
+          expect(response.body.token).toBeDefined();
+          done();
+        });
+    });
   });
 
   it('should fail returning 400 code error because uncompleted fields', done => {
@@ -94,18 +108,29 @@ describe('POST /users/sessions  - signIn user', () => {
     request(app)
       .post('/users/sessions')
       .send(signInData)
-      .expect(400, done());
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.internal_code).toBe('bad_request_error');
+        done();
+      });
   });
 
-  it('should fail returning 400 code error becasuse invalid password', done => {
+  it('should fail returning 400 code error because invalid password', done => {
     const signInData = {
       email: 'hector@wolox.com.ar',
-      password: 'asasdasdasds3'
+      password: 'asdasdasd5'
     };
-    request(app)
-      .post('/users/sessions')
-      .send(signInData)
-      .expect(400, done());
+    createUser(user).then(res => {
+      expect(res.status).toBe(201);
+      request(app)
+        .post('/users/sessions')
+        .send(signInData)
+        .then(response => {
+          expect(response.status).toBe(400);
+          expect(response.body.internal_code).toBe('bad_request_error');
+          done();
+        });
+    });
   });
 
   it('should fail returning 404 code error because the user with the requested email was not found', done => {
@@ -113,14 +138,21 @@ describe('POST /users/sessions  - signIn user', () => {
       email: 'hector@wolox.com.ar',
       password: 'asasdasdasds3'
     };
-    request(app)
-      .post('/users/sessions')
-      .send(signInData)
-      .expect(404, done());
+    createUser(user).then(res => {
+      expect(res.status).toBe(201);
+      request(app)
+        .post('/users/sessions')
+        .send(signInData)
+        .then(response => {
+          expect(response.status).toBe(400);
+          expect(response.body.internal_code).toBe('bad_request_error');
+          done();
+        });
+    });
   });
 });
 
-describe('GET /users', () => {
+describe('GET /users - list of users', () => {
   it('should response with 200 code', done => {
     request(app)
       .get('/users')
