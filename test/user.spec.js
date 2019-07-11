@@ -144,6 +144,7 @@ describe('POST /users/sessions  - signIn user', () => {
       .then(res => {
         expect(res.status).toBe(400);
         expect(res.body.internal_code).toBe('bad_request_error');
+        done();
       });
   });
 });
