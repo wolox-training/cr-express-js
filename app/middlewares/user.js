@@ -10,6 +10,8 @@ exports.validateSignup = () => [
     .not()
     .isEmpty(),
   body('email', 'email error')
+    .not()
+    .isEmpty()
     .isEmail()
     .custom(value => {
       const aux = value.split('@')[1];

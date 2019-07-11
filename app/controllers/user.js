@@ -11,7 +11,7 @@ exports.register = (req, res, next) => {
   return userService
     .createUser(user)
     .then(userCreated => {
-      res.send(userCreated);
+      res.status(201).send(userCreated);
     })
     .catch(next);
 };
