@@ -2,6 +2,12 @@ const request = require('supertest');
 const app = require('.././app');
 const userModel = require('../app/models').user;
 
+const createUser = user =>
+  request(app)
+    .post('/users')
+    .send(user)
+    .then(userCreated => userCreated);
+
 describe('POST /signup - create users', () => {
   const userData = {
     email: 'jose@wolox.com.ar',
@@ -11,17 +17,14 @@ describe('POST /signup - create users', () => {
   };
 
   it('should succeed returning the created user', done => {
-    request(app)
-      .post('/users')
-      .send(userData)
-      .then(res => {
-        expect(res.status).toBe(201);
-        expect(res.body.email).toBe(userData.email);
-        userModel.findOne({ where: { email: userData.email } }).then(user => {
-          expect(user.email).toBe(userData.email);
-          done();
-        });
+    createUser(userData).then(res => {
+      expect(res.status).toBe(201);
+      expect(res.body.email).toBe(userData.email);
+      userModel.findOne({ where: { email: userData.email } }).then(user => {
+        expect(user.email).toBe(userData.email);
+        done();
       });
+    });
   });
 
   it('should fail for the existence of the email', done => {
@@ -51,14 +54,11 @@ describe('POST /signup - create users', () => {
       lastName: 'asdasdasdas',
       password: '12'
     };
-    request(app)
-      .post('/users')
-      .send(userDataWrongPassword)
-      .then(res => {
-        expect(res.status).toBe(400);
-        expect(res.body.internal_code).toBe('bad_request_error');
-        done();
-      });
+    createUser(userDataWrongPassword).then(res => {
+      expect(res.status).toBe(400);
+      expect(res.body.internal_code).toBe('bad_request_error');
+      done();
+    });
   });
   it('should fail for uncompleted fields', done => {
     const userDataUncompletedFields = {
@@ -67,14 +67,11 @@ describe('POST /signup - create users', () => {
       lastName: '',
       password: 'abc12345'
     };
-    request(app)
-      .post('/users')
-      .send(userDataUncompletedFields)
-      .then(res => {
-        expect(res.status).toBe(400);
-        expect(res.body.internal_code).toBe('bad_request_error');
-        done();
-      });
+    createUser(userDataUncompletedFields).then(res => {
+      expect(res.status).toBe(400);
+      expect(res.body.internal_code).toBe('bad_request_error');
+      done();
+    });
   });
 });
 
@@ -85,28 +82,25 @@ describe('POST /users/sessions  - signIn user', () => {
     email: 'hector@wolox.com.ar',
     password: 'abc12345'
   };
-  it('should succeed returning the generated token', () => {
+  it('should succeed returning the generated token', done => {
     const signInData = {
       email: 'hector@wolox.com.ar',
       password: 'abc12345'
     };
-    request(app)
-      .post('/users')
-      .send(user)
-      .then(res => {
-        expect(res.status).toBe(201);
-        expect(res.body.email).toBe(user.email);
-      });
-    request(app)
-      .post('/users/sessions')
-      .send(signInData)
-      .then(res => {
-        expect(res.status).toBe(200);
-        expect(res.body.token);
-      });
+    createUser(user).then(res => {
+      expect(res.status).toBe(201);
+      request(app)
+        .post('/users/sessions')
+        .send(signInData)
+        .then(response => {
+          expect(response.status).toBe(200);
+          expect(response.body.token).toBeDefined();
+          done();
+        });
+    });
   });
 
-  it('should fail returning 400 code error because uncompleted fields', () => {
+  it('should fail returning 400 code error because uncompleted fields', done => {
     const signInData = {
       email: 'hectorwolox.com.ar',
       password: ''
@@ -117,27 +111,29 @@ describe('POST /users/sessions  - signIn user', () => {
       .then(res => {
         expect(res.status).toBe(400);
         expect(res.body.internal_code).toBe('bad_request_error');
+        done();
       });
   });
 
-  it('should fail returning 400 code error because invalid password', () => {
+  it('should fail returning 400 code error because invalid password', done => {
     const signInData = {
       email: 'hector@wolox.com.ar',
       password: 'asdasdasd5'
     };
-    request(app)
-      .post('/users')
-      .send(user);
-    request(app)
-      .post('/users/sessions')
-      .send(signInData)
-      .then(res => {
-        expect(res.status).toBe(400);
-        expect(res.body.internal_code).toBe('bad_request_error');
-      });
+    createUser(user).then(res => {
+      expect(res.status).toBe(201);
+      request(app)
+        .post('/users/sessions')
+        .send(signInData)
+        .then(response => {
+          expect(response.status).toBe(400);
+          expect(response.body.internal_code).toBe('bad_request_error');
+          done();
+        });
+    });
   });
 
-  /* it('should fail returning 404 code error because the user with the requested email was not found', () => {
+  it('should fail returning 404 code error because the user with the requested email was not found', () => {
     const signInData = {
       email: 'hector@wolox.com.ar',
       password: 'asasdasdasds3'
@@ -145,10 +141,9 @@ describe('POST /users/sessions  - signIn user', () => {
     request(app)
       .post('/users/sessions')
       .send(signInData)
-      .send(userDataUncompletedFields)
       .then(res => {
         expect(res.status).toBe(400);
         expect(res.body.internal_code).toBe('bad_request_error');
       });
-  });*/
+  });
 });

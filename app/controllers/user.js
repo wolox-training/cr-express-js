@@ -18,17 +18,16 @@ exports.register = (req, res, next) => {
     .catch(next);
 };
 
-exports.signIn = (req, res, next) => {
+exports.signIn = (req, res, next) =>
   userService
     .findOne(req.body.email)
     .then(user => {
       if (user) {
         if (encryptionService.validatePasssword(req.body.password, user.password)) {
-          res.send(authenticationService.generateToken(user));
+          return res.send(authenticationService.generateToken(user));
         }
         throw badRequestError('Invalid password');
       }
       throw notFoundError('User not found');
     })
     .catch(next);
-};
