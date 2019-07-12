@@ -2,6 +2,7 @@ const { badRequestError } = require('../errors');
 const authenticationService = require('../services/authentication');
 const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
+const { admin_role } = require('../../config').roles;
 
 exports.register = (req, res, next) => {
   const user = {
@@ -24,13 +25,13 @@ exports.registerAdmin = (req, res, next) => {
     name: req.body.email,
     lastName: req.body.lastName,
     password: encryptionService.encryptPassword(req.body.password),
-    role: 'admin'
+    role: admin_role
   };
   userService
-    .findOne(user.email)
+    .findOne({ email: user.email })
     .then(usr => {
       if (usr) {
-        usr.role = 'admin';
+        usr.role = admin_role;
         userService.updateUserRole(usr).then(updatedUser => {
           res.send(200, updatedUser);
         });

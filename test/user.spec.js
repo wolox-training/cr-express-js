@@ -21,15 +21,14 @@ const userData = {
   lastName: 'perez',
   password: '$2a$10$4sUmMDqL/Ux1rqGIyxka5OljqC.pZHyIPxvVsMsV6wc7Ro1xBHwQC'
 };
+const userDataToEndpoint = {
+  email: 'jose@wolox.com.ar',
+  name: 'jose',
+  lastName: 'perez',
+  password: 'asdasdasd4566'
+};
 
 describe('POST /signup - create users', () => {
-  const userDataToEndpoint = {
-    email: 'jose@wolox.com.ar',
-    name: 'jose',
-    lastName: 'perez',
-    password: 'asdasdasd4566'
-  };
-
   it('should succeed returning the created user', done => {
     createUser(userDataToEndpoint).then(res => {
       expect(res.status).toBe(201);
@@ -177,7 +176,7 @@ describe('POST /admin/users - signup admin users or update the user role to admi
       .then(createdUser => createdUser);
 
   it('should succeed returning 201 creating an user wich role is admin', done => {
-    createUserAdmin(userData).then(res => {
+    createUserAdmin(userDataToEndpoint).then(res => {
       expect(res.status).toBe(201);
       expect(res.body.role).toBe('admin');
       userModel.findOne({ where: { email: userData.email } }).then(user => {
@@ -188,10 +187,9 @@ describe('POST /admin/users - signup admin users or update the user role to admi
   });
 
   it('should succeed returning 200 code updating an user wich role is regular', done => {
-    createUser(userData).then(res => {
-      expect(res.status).toBe(201);
-      expect(res.body.role).toBe('regular');
-      createUserAdmin(userData).then(response => {
+    createUserModel(userData).then(createdUser => {
+      expect(createdUser.role).toBe('regular');
+      createUserAdmin(userDataToEndpoint).then(response => {
         expect(response.status).toBe(200);
         expect(response.body.role).toBe('admin');
         userModel.findOne({ where: { email: userData.email } }).then(user => {

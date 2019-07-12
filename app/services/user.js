@@ -35,9 +35,7 @@ exports.createUser = user =>
     });
 
 exports.updateUserRole = user =>
-  user
-    .save()
-    .then(updatedUser => updatedUser)
-    .catch(error => {
-      throw databaseError(error);
-    });
+  user.save().catch(error => {
+    logger.info(error);
+    throw databaseError(error);
+  });
