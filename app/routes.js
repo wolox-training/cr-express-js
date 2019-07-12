@@ -13,6 +13,7 @@ exports.init = app => {
     [userMiddleware.validateSignup(), userMiddleware.validateError],
     userController.register
   );
+
   app.post(
     '/users/sessions',
     [userMiddleware.validateSignin(), userMiddleware.validateError],
