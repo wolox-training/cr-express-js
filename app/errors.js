@@ -17,3 +17,4 @@ exports.conflictError = message => internalError(message, exports.CONFLICT_ERROR
 
 exports.NOT_FOUND_ERROR = 'not_found_error';
 exports.notFoundError = message => internalError(message, exports.NOT_FOUND_ERROR);
+
