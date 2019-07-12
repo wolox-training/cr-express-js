@@ -27,7 +27,6 @@ exports.signIn = (req, res, next) =>
           res.writeHead(200, { token: authenticationService.generateToken(user) });
           return res.end();
         }
-        throw badRequestError('sign in error');
       }
       throw badRequestError('sign in error');
     })
