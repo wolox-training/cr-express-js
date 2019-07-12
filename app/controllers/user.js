@@ -36,7 +36,7 @@ exports.getAllUsers = (req, res, next) => {
   const limit = req.query.limit || 10;
   const page = req.query.page || 1;
   const offset = (page - 1) * limit;
-  const orderBy = req.query.orderBy || 'name';
+  const orderBy = req.query.orderBy || 'email';
   return userService
     .findAllPagination(limit, offset, orderBy)
     .then(users => {
