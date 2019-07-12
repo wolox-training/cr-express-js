@@ -11,13 +11,10 @@ exports.findAllPagination = (limit, offset, orderField) =>
       throw databaseError(error);
     });
 
-exports.findOne = email =>
-  userModel
-    .findOne({ where: { email } })
-    .then(user => user)
-    .catch(error => {
-      throw databaseError(error);
-    });
+exports.findOne = keyValues =>
+  userModel.findOne({ where: keyValues }).catch(error => {
+    throw databaseError(error);
+  });
 
 exports.createUser = user =>
   userModel
