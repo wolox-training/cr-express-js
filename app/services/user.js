@@ -3,21 +3,15 @@ const userModel = require('../models').user;
 const logger = require('.././logger');
 
 exports.findAllPagination = (limit, offset, orderField) =>
-  userModel
-    .findAll({ limit, offset, order: [orderField] })
-    .then(users => users)
-    .catch(error => {
-      logger.info(error);
-      throw databaseError(error);
-    });
+  userModel.findAll({ limit, offset, order: [orderField] }).catch(error => {
+    logger.info(error);
+    throw databaseError(error);
+  });
 
-exports.findOne = email =>
-  userModel
-    .findOne({ where: { email } })
-    .then(user => user)
-    .catch(error => {
-      throw databaseError(error);
-    });
+exports.findOne = keyValues =>
+  userModel.findOne({ where: keyValues }).catch(error => {
+    throw databaseError(error);
+  });
 
 exports.createUser = user =>
   userModel
