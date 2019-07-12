@@ -5,53 +5,60 @@ const userModel = require('../app/models').user;
 const createUser = user =>
   request(app)
     .post('/users')
-    .send(user)
-    .then(userCreated => userCreated);
+    .send(user);
+
+const createUserModel = user =>
+  userModel.create({
+    email: user.email,
+    name: user.name,
+    lastName: user.lastName,
+    password: user.password
+  });
+
+const userData = {
+  email: 'jose@wolox.com.ar',
+  name: 'jose',
+  lastName: 'perez',
+  password: '$2a$10$4sUmMDqL/Ux1rqGIyxka5OljqC.pZHyIPxvVsMsV6wc7Ro1xBHwQC'
+};
 
 describe('POST /signup - create users', () => {
-  const userData = {
+  const userDataToEndpoint = {
     email: 'jose@wolox.com.ar',
     name: 'jose',
     lastName: 'perez',
-    password: 'asdasdasd654'
+    password: 'asdasdasd4566'
   };
 
   it('should succeed returning the created user', done => {
-    createUser(userData).then(res => {
+    createUser(userDataToEndpoint).then(res => {
       expect(res.status).toBe(201);
-      expect(res.body.email).toBe(userData.email);
-      userModel.findOne({ where: { email: userData.email } }).then(user => {
-        expect(user.email).toBe(userData.email);
+      expect(res.body.email).toBe(userDataToEndpoint.email);
+      userModel.findOne({ where: { email: userDataToEndpoint.email } }).then(user => {
+        expect(user.email).toBe(userDataToEndpoint.email);
         done();
       });
     });
   });
 
   it('should fail for the existence of the email', done => {
-    userModel
-      .create({
-        email: userData.email,
-        name: userData.name,
-        lastName: userData.lastName,
-        password: userData.password
-      })
-      .then(() => {
-        request(app)
-          .post('/users')
-          .send(userData)
-          .then(res => {
-            expect(res.status).toBe(409);
-            expect(res.body.internal_code).toBe('conflict_error');
-            done();
-          });
-      });
+    createUserModel(userData).then(() => {
+      request(app)
+        .post('/users')
+        .send(userDataToEndpoint)
+        .then(res => {
+          expect(res.status).toBe(409);
+          expect(res.body.internal_code).toBe('conflict_error');
+          done();
+        });
+    });
   });
 
   it('should fail for invalid password', done => {
     const userDataWrongPassword = {
-      email: 'asdadsa@wolox.com.ar',
-      name: 'hector',
-      lastName: 'asdasdasdas',
+      email: 'jose@wolox.com.ar',
+      name: 'jose',
+      lastName: 'perez',
       password: '12'
     };
     createUser(userDataWrongPassword).then(res => {
@@ -60,10 +67,11 @@ describe('POST /signup - create users', () => {
       done();
     });
   });
+
   it('should fail for uncompleted fields', done => {
     const userDataUncompletedFields = {
       email: '',
-      name: 'hector',
+      name: 'jose',
       lastName: '',
       password: 'abc12345'
     };
@@ -76,25 +84,18 @@ describe('POST /signup - create users', () => {
 });
 
 describe('POST /users/sessions  - signIn user', () => {
-  const user = {
-    name: 'hector',
-    lastName: 'gonzalez',
-    email: 'hector@wolox.com.ar',
-    password: 'abc12345'
-  };
   it('should succeed returning the generated token', done => {
-    const signInData = {
-      email: 'hector@wolox.com.ar',
-      password: 'abc12345'
+    const signInDataToEndpoint = {
+      email: 'jose@wolox.com.ar',
+      password: 'asdasdasd4566'
     };
-    createUser(user).then(res => {
-      expect(res.status).toBe(201);
+    createUserModel(userData).then(() => {
       request(app)
         .post('/users/sessions')
-        .send(signInData)
+        .send(signInDataToEndpoint)
         .then(response => {
           expect(response.status).toBe(200);
-          expect(response.body.token).toBeDefined();
+          expect(response.header.token).toBeDefined();
           done();
         });
     });
@@ -117,11 +118,10 @@ describe('POST /users/sessions  - signIn user', () => {
 
   it('should fail returning 400 code error because invalid password', done => {
     const signInData = {
-      email: 'hector@wolox.com.ar',
+      email: 'jose@wolox.com.ar',
       password: 'asdasdasd5'
     };
-    createUser(user).then(res => {
-      expect(res.status).toBe(201);
+    createUserModel(userData).then(() => {
       request(app)
         .post('/users/sessions')
         .send(signInData)
@@ -133,13 +133,12 @@ describe('POST /users/sessions  - signIn user', () => {
     });
   });
 
-  it('should fail returning 404 code error because the user with the requested email was not found', done => {
+  it('should fail returning 400 code error because the user email does not exists', done => {
     const signInData = {
       email: 'hector@wolox.com.ar',
       password: 'asasdasdasds3'
     };
-    createUser(user).then(res => {
-      expect(res.status).toBe(201);
+    createUserModel(userData).then(() => {
       request(app)
         .post('/users/sessions')
         .send(signInData)

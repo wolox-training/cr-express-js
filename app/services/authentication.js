@@ -7,6 +7,6 @@ exports.generateToken = user => {
     name: user.name,
     lastName: user.lastName
   };
-  const token = { token: jwt.encode(userAux, secret) };
+  const token = jwt.encode(userAux, secret);
   return token;
 };
