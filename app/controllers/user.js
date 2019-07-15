@@ -22,13 +22,13 @@ exports.signIn = (req, res, next) =>
   userService
     .findOne({ email: req.body.email })
     .then(user => {
-      if (user) {
-        if (encryptionService.validatePasssword(req.body.password, user.password)) {
-          res.writeHead(200, { token: authenticationService.generateToken(user) });
-          return res.end();
-        }
+      if (user && encryptionService.validatePasssword(req.body.password, user.password)) {
+        const token = authenticationService.generateToken(user);
+        res.setHeader('Authorization', `Bearer ${token}`);
+        res.end('ok');
+      } else {
+        throw badRequestError('sign in error');
       }
-      throw badRequestError('sign in error');
     })
     .catch(next);
 

@@ -95,7 +95,7 @@ describe('POST /users/sessions  - signIn user', () => {
         .send(signInDataToEndpoint)
         .then(response => {
           expect(response.status).toBe(200);
-          expect(response.header.token).toBeDefined();
+          expect(response.header.authorization).toBeDefined();
           done();
         });
     });
@@ -128,6 +128,7 @@ describe('POST /users/sessions  - signIn user', () => {
         .then(response => {
           expect(response.status).toBe(400);
           expect(response.body.internal_code).toBe('bad_request_error');
+          expect(response.body.message).toBe('sign in error');
           done();
         });
     });
@@ -145,6 +146,7 @@ describe('POST /users/sessions  - signIn user', () => {
         .then(response => {
           expect(response.status).toBe(400);
           expect(response.body.internal_code).toBe('bad_request_error');
+          expect(response.body.message).toBe('sign in error');
           done();
         });
     });
