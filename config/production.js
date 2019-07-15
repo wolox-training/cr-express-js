@@ -2,7 +2,7 @@ exports.config = {
   environment: 'production',
   common: {
     database: {
-      name: process.env.DATABASE_URL
+      name: process.env.DB_NAME
     }
   },
   isProduction: true
