@@ -25,7 +25,7 @@ exports.signIn = (req, res, next) =>
       if (user && encryptionService.validatePasssword(req.body.password, user.password)) {
         const token = authenticationService.generateToken(user);
         res.setHeader('Authorization', `Bearer ${token}`);
-        res.end('ok');
+        res.end();
       } else {
         throw badRequestError('sign in error');
       }
