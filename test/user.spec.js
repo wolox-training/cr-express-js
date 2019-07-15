@@ -159,7 +159,7 @@ describe('GET /users - list of users', () => {
   it('should response with 200 code', done => {
     request(app)
       .get('/users')
-      .set('token', token)
+      .set('Authorization', `Bearer ${token}`)
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.totalPages).toBeDefined();
@@ -170,7 +170,7 @@ describe('GET /users - list of users', () => {
   it('should response with 200 code', done => {
     request(app)
       .get('/users?limit=10&page=1&orderBy=email&order=desc')
-      .set('token', token)
+      .set('Authorization', `Bearer ${token}`)
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.totalPages).toBeDefined();
@@ -181,7 +181,7 @@ describe('GET /users - list of users', () => {
   it('should response with 200 code when the response should not show anything', done => {
     request(app)
       .get('/users?limit=10&page=4')
-      .set('token', token)
+      .set('Authorization', `Bearer ${token}`)
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.totalPages).toBeDefined();
