@@ -2,11 +2,12 @@ const jwt = require('jwt-simple');
 const { secret } = require('../../config').common.session;
 
 exports.generateToken = user => {
-  const userAccount = {
+  const tokenPayload = {
     email: user.email,
     name: user.name,
     lastName: user.lastName
   };
-  const token = jwt.encode(userAccount, secret);
-  return token;
+  return jwt.encode(tokenPayload, secret);
 };
+
+exports.decodeToken = token => jwt.decode(token, secret);

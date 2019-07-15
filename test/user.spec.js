@@ -1,6 +1,7 @@
 const request = require('supertest');
 const app = require('.././app');
 const userModel = require('../app/models').user;
+const authenticationService = require('./../app/services/authentication');
 
 const createUser = user =>
   request(app)
@@ -94,7 +95,7 @@ describe('POST /users/sessions  - signIn user', () => {
         .send(signInDataToEndpoint)
         .then(response => {
           expect(response.status).toBe(200);
-          expect(response.header.token).toBeDefined();
+          expect(response.header.authorization).toBeDefined();
           done();
         });
     });
@@ -127,6 +128,7 @@ describe('POST /users/sessions  - signIn user', () => {
         .then(response => {
           expect(response.status).toBe(400);
           expect(response.body.internal_code).toBe('bad_request_error');
+          expect(response.body.message).toBe('sign in error');
           done();
         });
     });
@@ -144,6 +146,7 @@ describe('POST /users/sessions  - signIn user', () => {
         .then(response => {
           expect(response.status).toBe(400);
           expect(response.body.internal_code).toBe('bad_request_error');
+          expect(response.body.message).toBe('sign in error');
           done();
         });
     });
@@ -151,20 +154,39 @@ describe('POST /users/sessions  - signIn user', () => {
 });
 
 describe('GET /users - list of users', () => {
+  const token = authenticationService.generateToken(userData);
   it('should response with 200 code', done => {
     request(app)
       .get('/users')
-      .expect(200, done());
+      .set('token', token)
+      .then(res => {
+        expect(res.status).toBe(200);
+        expect(res.body.totalPages).toBeDefined();
+        expect(res.body.count).toBeDefined();
+        done();
+      });
   });
   it('should response with 200 code', done => {
     request(app)
-      .get('/users?limit=10&page=1')
-      .expect(200, done());
+      .get('/users?limit=10&page=1&orderBy=email&order=desc')
+      .set('token', token)
+      .then(res => {
+        expect(res.status).toBe(200);
+        expect(res.body.totalPages).toBeDefined();
+        expect(res.body.count).toBeDefined();
+        done();
+      });
   });
   it('should response with 200 code when the response should not show anything', done => {
     request(app)
       .get('/users?limit=10&page=4')
-      .expect(200, done());
+      .set('token', token)
+      .then(res => {
+        expect(res.status).toBe(200);
+        expect(res.body.totalPages).toBeDefined();
+        expect(res.body.count).toBeDefined();
+        done();
+      });
   });
 });
 

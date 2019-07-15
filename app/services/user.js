@@ -2,11 +2,17 @@ const { conflictError, databaseError } = require('../errors');
 const userModel = require('../models').user;
 const logger = require('.././logger');
 
-exports.findAllPagination = (limit, offset, orderField) =>
-  userModel.findAll({ limit, offset, order: [orderField] }).catch(error => {
-    logger.info(error);
-    throw databaseError(error);
-  });
+exports.findAllPagination = paginationObject =>
+  userModel
+    .findAndCountAll({
+      limit: paginationObject.limit,
+      offset: paginationObject.offset,
+      order: [[paginationObject.orderBy, paginationObject.order]]
+    })
+    .catch(error => {
+      logger.info(error);
+      throw databaseError(error);
+    });
 
 exports.findOne = keyValues =>
   userModel.findOne({ where: keyValues }).catch(error => {

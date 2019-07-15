@@ -48,24 +48,34 @@ exports.signIn = (req, res, next) =>
   userService
     .findOne({ email: req.body.email })
     .then(user => {
-      if (user) {
-        if (encryptionService.validatePasssword(req.body.password, user.password)) {
-          res.writeHead(200, { token: authenticationService.generateToken(user) });
-          return res.end();
-        }
+      if (user && encryptionService.validatePasssword(req.body.password, user.password)) {
+        const token = authenticationService.generateToken(user);
+        res.setHeader('Authorization', `Bearer ${token}`);
+        res.end();
+      } else {
+        throw badRequestError('sign in error');
       }
-      throw badRequestError('sign in error');
     })
     .catch(next);
 
 exports.getAllUsers = (req, res, next) => {
   const limit = req.query.limit || 10;
   const page = req.query.page || 1;
-  const offset = (page - 1) * limit;
-  const orderBy = req.query.orderBy || 'email';
+  const paginationParams = {
+    limit,
+    page,
+    offset: (page - 1) * limit,
+    orderBy: req.query.orderBy || 'email',
+    order:
+      req.query.order && (req.query.order.toUpperCase() === 'ASC' || req.query.order.toUpperCase() === 'DESC')
+        ? req.query.order.toUpperCase()
+        : 'ASC'
+  };
+
   return userService
-    .findAllPagination(limit, offset, orderBy)
+    .findAllPagination(paginationParams)
     .then(users => {
+      users.totalPages = Math.ceil(users.count / limit);
       res.send(users);
     })
     .catch(next);
