@@ -35,14 +35,21 @@ exports.signIn = (req, res, next) =>
 exports.getAllUsers = (req, res, next) => {
   const limit = req.query.limit || 10;
   const page = req.query.page || 1;
-  const offset = (page - 1) * limit;
-  const orderBy = req.query.orderBy || 'email';
-  /* if (req.query.order && (req.query.order === 'ASC' || req.query.order === 'DESC')) {
-    const order = req.query.order || 'ASC';
-  }*/
+  const paginationParams = {
+    limit,
+    page,
+    offset: (page - 1) * limit,
+    orderBy: req.query.orderBy || 'email',
+    order:
+      req.query.order && (req.query.order.toUpperCase() === 'ASC' || req.query.order.toUpperCase() === 'DESC')
+        ? req.query.order.toUpperCase()
+        : 'ASC'
+  };
+
   return userService
-    .findAllPagination(limit, offset, orderBy)
+    .findAllPagination(paginationParams)
     .then(users => {
+      users.totalPages = Math.ceil(users.count / limit);
       res.send(users);
     })
     .catch(next);

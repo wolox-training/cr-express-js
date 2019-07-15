@@ -9,3 +9,5 @@ exports.generateToken = user => {
   };
   return jwt.encode(tokenPayload, secret);
 };
+
+exports.decodeToken = token => jwt.decode(token, secret);
