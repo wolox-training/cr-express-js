@@ -4,13 +4,15 @@ const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
 const { admin_role } = require('../../config').roles;
 
+const createUserObject = req => ({
+  email: req.body.email,
+  name: req.body.name,
+  lastName: req.body.lastName,
+  password: encryptionService.encryptPassword(req.body.password)
+});
+
 exports.register = (req, res, next) => {
-  const user = {
-    email: req.body.email,
-    name: req.body.name,
-    lastName: req.body.lastName,
-    password: encryptionService.encryptPassword(req.body.password)
-  };
+  const user = createUserObject(req);
   return userService
     .createUser(user)
     .then(userCreated => {
@@ -20,13 +22,8 @@ exports.register = (req, res, next) => {
 };
 
 exports.registerAdmin = (req, res, next) => {
-  const user = {
-    email: req.body.email,
-    name: req.body.email,
-    lastName: req.body.lastName,
-    password: encryptionService.encryptPassword(req.body.password),
-    role: admin_role
-  };
+  const user = createUserObject(req);
+  user.role = admin_role;
   userService
     .findOne({ email: user.email })
     .then(usr => {
