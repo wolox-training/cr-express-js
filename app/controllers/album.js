@@ -1,6 +1,6 @@
 const albumService = require('../services/album');
 
-exports.getAllAlbums = (req, res, next) =>
+exports.getAllAlbums = (_, res, next) =>
   albumService
     .getAllAlbums()
     .then(albums => res.send(albums))
