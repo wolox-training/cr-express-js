@@ -161,30 +161,37 @@ describe('GET /users - list of users', () => {
       .set('Authorization', `Bearer ${token}`)
       .then(res => {
         expect(res.status).toBe(200);
-        expect(res.body.totalPages).toBeDefined();
-        expect(res.body.count).toBeDefined();
+        expect(res.body.totalPages).toBe(1);
+        expect(res.body.page).toBe(1);
+        expect(res.body.users.count).toBe(0);
+        expect(res.body.order).toBe('ASC');
+        expect(res.body.orderBy).toBe('email');
+        expect(res.body.limit).toBe(10);
         done();
       });
   });
   it('should response with 200 code', done => {
     request(app)
-      .get('/users?limit=10&page=1&orderBy=email&order=desc')
+      .get('/users?limit=20&page=1&orderBy=name&order=desc')
       .set('Authorization', `Bearer ${token}`)
       .then(res => {
         expect(res.status).toBe(200);
-        expect(res.body.totalPages).toBeDefined();
-        expect(res.body.count).toBeDefined();
+        expect(res.body.totalPages).toBe(1);
+        expect(res.body.users.count).toBe(0);
+        expect(res.body.order).toBe('DESC');
+        expect(res.body.orderBy).toBe('name');
+        expect(res.body.limit).toBe(20);
         done();
       });
   });
-  it('should response with 200 code when the response should not show anything', done => {
+  it('should response with 500 because invalid token', done => {
     request(app)
       .get('/users?limit=10&page=4')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', 'Bearer 12')
       .then(res => {
-        expect(res.status).toBe(200);
-        expect(res.body.totalPages).toBeDefined();
-        expect(res.body.count).toBeDefined();
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe('invalid token');
+        expect(res.body.internal_code).toBe('bad_request_error');
         done();
       });
   });
