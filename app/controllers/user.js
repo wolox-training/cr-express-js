@@ -54,7 +54,7 @@ exports.signIn = (req, res, next) =>
   userService
     .findOne({ email: req.body.email })
     .then(user => {
-      console.log('holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 2');
+      console.log('holaaaaaa');
       if (user && encryptionService.validatePasssword(req.body.password, user.password)) {
         const token = authenticationService.generateToken(user);
         res.setHeader('Authorization', `Bearer ${token}`);
