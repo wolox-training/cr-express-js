@@ -3,6 +3,7 @@ const authenticationService = require('../services/authentication');
 const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
 const { admin_role } = require('../../config').roles;
+const { regular_role } = require('../../config').roles;
 
 const createUserObject = req => ({
   email: req.body.email,
@@ -22,6 +23,7 @@ const defineOrder = order => {
 
 exports.register = (req, res, next) => {
   const user = createUserObject(req);
+  user.role = regular_role;
   return userService
     .createUser(user)
     .then(userCreated => {
@@ -54,7 +56,6 @@ exports.signIn = (req, res, next) =>
   userService
     .findOne({ email: req.body.email })
     .then(user => {
-      console.log('holaaaaaa');
       if (user && encryptionService.validatePasssword(req.body.password, user.password)) {
         const token = authenticationService.generateToken(user);
         res.setHeader('Authorization', `Bearer ${token}`);
