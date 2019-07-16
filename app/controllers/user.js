@@ -3,6 +3,15 @@ const authenticationService = require('../services/authentication');
 const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
 
+const defineOrder = order => {
+  const ascOrder = 'ASC';
+  const descOrder = 'DESC';
+  if (order && (order.toUpperCase() === ascOrder || order.toUpperCase() === descOrder)) {
+    return order.toUpperCase();
+  }
+  return ascOrder;
+};
+
 exports.register = (req, res, next) => {
   const user = {
     email: req.body.email,
@@ -40,16 +49,11 @@ exports.getAllUsers = (req, res, next) => {
     page,
     offset: (page - 1) * limit,
     orderBy: req.query.orderBy || 'email',
-    order:
-      req.query.order && (req.query.order.toUpperCase() === 'ASC' || req.query.order.toUpperCase() === 'DESC')
-        ? req.query.order.toUpperCase()
-        : 'ASC'
+    order: defineOrder(req.query.order)
   };
-
   return userService
     .findAllPagination(paginationParams)
     .then(users => {
-      users.totalPages = Math.ceil(users.count / limit);
       res.send(users);
     })
     .catch(next);

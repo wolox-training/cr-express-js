@@ -162,8 +162,11 @@ describe('GET /users - list of users', () => {
       .set('Authorization', `Bearer ${token}`)
       .then(res => {
         expect(res.status).toBe(200);
-        expect(res.body.totalPages).toBeDefined();
-        expect(res.body.count).toBeDefined();
+        expect(res.body.totalPages).toBe(1);
+        expect(res.body.page).toBe(1);
+        expect(res.body.users.count).toBe(0);
+        expect(res.body.order).toBe('ASC');
+        expect(res.body.limit).toBe(10);
         done();
       });
   });
@@ -173,8 +176,8 @@ describe('GET /users - list of users', () => {
       .set('Authorization', `Bearer ${token}`)
       .then(res => {
         expect(res.status).toBe(200);
-        expect(res.body.totalPages).toBeDefined();
-        expect(res.body.count).toBeDefined();
+        expect(res.body.totalPages).toBe(1);
+        expect(res.body.users.count).toBe(0);
         done();
       });
   });
@@ -184,8 +187,8 @@ describe('GET /users - list of users', () => {
       .set('Authorization', `Bearer ${token}`)
       .then(res => {
         expect(res.status).toBe(200);
-        expect(res.body.totalPages).toBeDefined();
-        expect(res.body.count).toBeDefined();
+        expect(res.body.totalPages).toBe(1);
+        expect(res.body.users.count).toBe(0);
         done();
       });
   });
