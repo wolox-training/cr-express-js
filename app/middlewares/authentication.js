@@ -1,5 +1,5 @@
-const { badRequestError } = require('../errors');
 const authService = require('../services/authentication');
+const { badRequestError } = require('../errors');
 
 exports.verifyToken = (req, res, next) => {
   const token = req.headers.authorization.split(' ')[1];
@@ -8,7 +8,6 @@ exports.verifyToken = (req, res, next) => {
     if (decoded) {
       return next();
     }
-    return next(badRequestError('invalid token'));
   }
-  return next(badRequestError('token does not exists'));
+  return next(badRequestError('invalid token'));
 };

@@ -21,6 +21,7 @@ exports.findAllPagination = paginationObject =>
       totalPages: calculateTotalPages(users.count, paginationObject.limite),
       limit: Number(paginationObject.limit),
       order: paginationObject.order,
+      orderBy: paginationObject.orderBy,
       page: Number(paginationObject.page)
     }))
     .catch(error => {
