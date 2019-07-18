@@ -45,6 +45,7 @@ exports.createUser = user =>
     })
     .then(userCreated => {
       logger.info(`user with name ${userCreated.name} created!`);
+      logger.info(JSON.stringify(userCreated));
       return userCreated;
     })
     .catch(error => {
