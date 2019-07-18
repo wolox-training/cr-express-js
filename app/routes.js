@@ -19,7 +19,11 @@ exports.init = app => {
     [userMiddleware.validateSignin(), userMiddleware.validateError],
     userController.signIn
   );
-  app.get('/users', [authenticationMiddleware.verifyToken], userController.getAllUsers);
+  app.get(
+    '/users',
+    [authenticationMiddleware.verifyToken, userMiddleware.checkOrder(), userMiddleware.validateError],
+    userController.getAllUsers
+  );
   app.post(
     '/admin/users',
     [userMiddleware.validateSignup(), userMiddleware.validateError],

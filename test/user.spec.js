@@ -155,35 +155,47 @@ describe('POST /users/sessions  - signIn user', () => {
 
 describe('GET /users - list of users', () => {
   const token = authenticationService.generateToken(userData);
+  const anotherUser = {
+    email: 'kevin@wolox.com.ar',
+    name: 'kevin',
+    lastName: 'perez',
+    password: '$2a$10$4sUmMDqL/Ux1rqGIyxka5OljqC.pZHyIPxvVsMsV6wc7Ro1xBHwQC'
+  };
   it('should response with 200 code', done => {
-    request(app)
-      .get('/users')
-      .set('Authorization', `Bearer ${token}`)
-      .then(res => {
-        expect(res.status).toBe(200);
-        expect(res.body.totalPages).toBe(1);
-        expect(res.body.page).toBe(1);
-        expect(res.body.users.count).toBe(0);
-        expect(res.body.order).toBe('ASC');
-        expect(res.body.orderBy).toBe('email');
-        expect(res.body.limit).toBe(10);
-        done();
+    createUserModel(userData).then(() => {
+      createUserModel(anotherUser).then(() => {
+        request(app)
+          .get('/users')
+          .set('Authorization', `Bearer ${token}`)
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body.usersPage.totalPages).toBe(1);
+            expect(res.body.usersPage.page).toBe(1);
+            expect(res.body.usersPage.users.count).toBe(2);
+            expect(res.body.usersPage.users.rows[0].email < res.body.usersPage.users.rows[1].email);
+            done();
+          });
       });
+    });
   });
+
   it('should response with 200 code', done => {
-    request(app)
-      .get('/users?limit=20&page=1&orderBy=name&order=desc')
-      .set('Authorization', `Bearer ${token}`)
-      .then(res => {
-        expect(res.status).toBe(200);
-        expect(res.body.totalPages).toBe(1);
-        expect(res.body.users.count).toBe(0);
-        expect(res.body.order).toBe('DESC');
-        expect(res.body.orderBy).toBe('name');
-        expect(res.body.limit).toBe(20);
-        done();
+    createUserModel(userData).then(() => {
+      createUserModel(anotherUser).then(() => {
+        request(app)
+          .get('/users?limit=20&page=1&orderBy=name&order=desc')
+          .set('Authorization', `Bearer ${token}`)
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body.usersPage.totalPages).toBe(1);
+            expect(res.body.usersPage.users.count).toBe(2);
+            expect(res.body.usersPage.users.rows[0].name > res.body.usersPage.users.rows[1].name);
+            done();
+          });
       });
+    });
   });
+
   it('should response with 500 because invalid token', done => {
     request(app)
       .get('/users?limit=10&page=4')
