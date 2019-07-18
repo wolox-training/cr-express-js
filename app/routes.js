@@ -21,7 +21,7 @@ exports.init = app => {
   );
   app.get(
     '/users',
-    [authenticationMiddleware.verifyToken, userMiddleware.checkOrder(), userMiddleware.checkOrderError],
+    [authenticationMiddleware.verifyToken, userMiddleware.checkOrder(), userMiddleware.validateError],
     userController.getAllUsers
   );
 };

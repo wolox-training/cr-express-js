@@ -2,17 +2,7 @@ const { badRequestError } = require('../errors');
 const authenticationService = require('../services/authentication');
 const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
-// const { check } = require('express-validator/check');
-
-/* const defineOrder = order => {
-  const ascOrder = 'ASC';
-  const descOrder = 'DESC';
-
-  if (order && (order.toUpperCase() === ascOrder || order.toUpperCase() === descOrder)) {
-    return order.toUpperCase();
-  }
-  return ascOrder;
-};*/
+const ascOrder = 'ASC';
 
 exports.register = (req, res, next) => {
   const user = {
@@ -52,12 +42,12 @@ exports.getAllUsers = (req, res, next) => {
     page,
     offset: (page - 1) * limit,
     orderBy: req.query.orderBy || 'email',
-    order: req.query.order || 'ASC'
+    order: req.query.order || ascOrder
   };
   return userService
     .findAllPagination(paginationParams)
     .then(users => {
-      res.send({ users });
+      res.send({ usersPage: users });
     })
     .catch(next);
 };

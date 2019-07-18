@@ -40,22 +40,9 @@ exports.validateError = (req, res, next) => {
 
 exports.checkOrder = () => [
   check('order')
+    .optional()
     .not()
     .isEmpty()
-    .customSanitizer(value => {
-      if (value) {
-        return value.toUpperCase();
-      }
-      return value;
-    })
+    .customSanitizer(value => value && value.toUpperCase())
     .isIn([ascOrder, descOrder])
 ];
-
-exports.checkOrderError = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    // Esto se que esta mal
-    req.query.order = '';
-  }
-  return next();
-};
