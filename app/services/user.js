@@ -18,11 +18,8 @@ exports.findAllPagination = paginationObject =>
     })
     .then(users => ({
       users,
-      totalPages: calculateTotalPages(users.count, paginationObject.limite),
-      limit: Number(paginationObject.limit),
-      order: paginationObject.order,
-      orderBy: paginationObject.orderBy,
-      page: Number(paginationObject.page)
+      totalPages: calculateTotalPages(users.count, paginationObject.limit),
+      page: paginationObject.page
     }))
     .catch(error => {
       logger.info(error);

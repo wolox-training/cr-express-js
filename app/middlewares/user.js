@@ -1,6 +1,8 @@
-const { body } = require('express-validator/check');
+const { body, check } = require('express-validator/check');
 const { validationResult } = require('express-validator/check');
 const { badRequestError } = require('../errors');
+const ascOrder = 'ASC';
+const descOrder = 'DESC';
 
 const validateEmailPassword = () => [
   body('email', 'email error')
@@ -32,6 +34,28 @@ exports.validateError = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(badRequestError(errors.array()));
+  }
+  return next();
+};
+
+exports.checkOrder = () => [
+  check('order')
+    .not()
+    .isEmpty()
+    .customSanitizer(value => {
+      if (value) {
+        return value.toUpperCase();
+      }
+      return value;
+    })
+    .isIn([ascOrder, descOrder])
+];
+
+exports.checkOrderError = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // Esto se que esta mal
+    req.query.order = '';
   }
   return next();
 };

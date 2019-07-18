@@ -161,11 +161,12 @@ describe('GET /users - list of users', () => {
       .get('/users')
       .set('Authorization', `Bearer ${token}`)
       .then(res => {
+        console.log(res);
         expect(res.status).toBe(200);
         expect(res.body.totalPages).toBe(1);
         expect(res.body.page).toBe(1);
         expect(res.body.users.count).toBe(0);
-        expect(res.body.order).toBe('ASC');
+        expect(res.req.query).toBe('ASC');
         expect(res.body.orderBy).toBe('email');
         expect(res.body.limit).toBe(10);
         done();

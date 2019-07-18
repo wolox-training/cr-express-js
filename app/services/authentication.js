@@ -1,7 +1,7 @@
 const jwt = require('jwt-simple');
 const { secret } = require('../../config').common.session;
-const { badRequestError } = require('../errors');
-const logger = require('.././logger');
+// const { badRequestError } = require('../errors');
+// const logger = require('.././logger');
 
 exports.generateToken = user => {
   const tokenPayload = {
@@ -12,11 +12,4 @@ exports.generateToken = user => {
   return jwt.encode(tokenPayload, secret);
 };
 
-exports.decodeToken = token => {
-  try {
-    return jwt.decode(token, secret);
-  } catch (err) {
-    logger.info(err);
-    throw badRequestError('invalid token');
-  }
-};
+exports.decodeToken = token => jwt.decode(token, secret);
