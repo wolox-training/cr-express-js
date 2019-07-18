@@ -2,7 +2,7 @@ const { healthCheck } = require('./controllers/healthCheck');
 const albumController = require('./controllers/album');
 const userController = require('./controllers/user');
 const userMiddleware = require('./middlewares/user');
-// const authenticationMiddleware = require('./middlewares/authentication');
+const authenticationMiddleware = require('./middlewares/authentication');
 
 exports.init = app => {
   app.get('/health', healthCheck);
@@ -19,7 +19,7 @@ exports.init = app => {
     [userMiddleware.validateSignin(), userMiddleware.validateError],
     userController.signIn
   );
-  app.get('/users', userController.getAllUsers);
+  app.get('/users', [authenticationMiddleware.verifyToken], userController.getAllUsers);
   app.post(
     '/admin/users',
     [userMiddleware.validateSignup(), userMiddleware.validateError],
