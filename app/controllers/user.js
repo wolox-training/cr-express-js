@@ -24,6 +24,7 @@ const defineOrder = order => {
 exports.register = (req, res, next) => {
   const user = createUserObject(req);
   user.role = regular_role;
+  console.log(`ROOOOOL: ${user.role}`);
   return userService
     .createUser(user)
     .then(userCreated => {
