@@ -170,10 +170,10 @@ describe('GET /users - list of users', () => {
           .set('Authorization', `Bearer ${token}`)
           .then(res => {
             expect(res.status).toBe(200);
-            expect(res.body.users.totalPages).toBe(1);
-            expect(res.body.users.page).toBe(1);
-            expect(res.body.users.users.count).toBe(2);
-            expect(res.body.users.users.rows[0].email < res.body.users.users.rows[1].email);
+            expect(res.body.usersPage.totalPages).toBe(1);
+            expect(res.body.usersPage.page).toBe(1);
+            expect(res.body.usersPage.users.count).toBe(2);
+            expect(res.body.usersPage.users.rows[0].email < res.body.usersPage.users.rows[1].email);
             done();
           });
       });
@@ -188,9 +188,9 @@ describe('GET /users - list of users', () => {
           .set('Authorization', `Bearer ${token}`)
           .then(res => {
             expect(res.status).toBe(200);
-            expect(res.body.users.totalPages).toBe(1);
-            expect(res.body.users.users.count).toBe(2);
-            expect(res.body.users.users.rows[0].name > res.body.users.users.rows[1].name);
+            expect(res.body.usersPage.totalPages).toBe(1);
+            expect(res.body.usersPage.users.count).toBe(2);
+            expect(res.body.usersPage.users.rows[0].name > res.body.usersPage.users.rows[1].name);
             done();
           });
       });
