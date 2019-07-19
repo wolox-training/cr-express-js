@@ -168,7 +168,7 @@ describe('GET /users - list of users', () => {
     }
     return arr.every((value, index) => !index || value[orderBy] < arr[index - 1][orderBy]);
   };
-  it('should response with 200 code', done => {
+  it('should succeed returning 200 code', done => {
     createUserModel(userData).then(() => {
       createUserModel(anotherUser).then(() => {
         request(app)
@@ -185,7 +185,7 @@ describe('GET /users - list of users', () => {
     });
   });
 
-  it('should response with 200 code', done => {
+  it('should succeed returning 200 code', done => {
     createUserModel(userData).then(() => {
       createUserModel(anotherUser).then(() => {
         request(app)
@@ -202,7 +202,7 @@ describe('GET /users - list of users', () => {
     });
   });
 
-  it('should response with 500 because invalid token', done => {
+  it('should response with 400 because invalid token', done => {
     request(app)
       .get('/users?limit=10&page=4')
       .set('Authorization', 'Bearer 12')
