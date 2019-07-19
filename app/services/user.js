@@ -1,5 +1,6 @@
 const { conflictError, databaseError } = require('../errors');
 const userModel = require('../models').user;
+const userAlbumModel = require('../models').user_album;
 const logger = require('.././logger');
 
 const calculateTotalPages = (count, limit) => {
@@ -41,8 +42,6 @@ exports.createUser = user =>
     })
     .then(userCreated => {
       logger.info(`user with name ${userCreated.name} created!`);
-      logger.info('HOLAAAAA');
-      logger.info(JSON.stringify(userCreated));
       return userCreated;
     })
     .catch(error => {
@@ -58,3 +57,21 @@ exports.updateUserRole = user =>
     logger.info(error);
     throw databaseError(error);
   });
+
+exports.buyAlbum = (user, album) =>
+  userAlbumModel
+    .create({
+      userId: user.id,
+      albumId: album.id
+    })
+    .then(purchase => {
+      logger.info(`album ${purchase.albumId} bought by userid ${purchase.userId}`);
+      return purchase;
+    })
+    .catch(error => {
+      logger.info(error);
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw conflictError('user already exists!');
+      }
+      throw databaseError(error);
+    });

@@ -29,5 +29,5 @@ exports.init = app => {
     [userMiddleware.validateSignup(), userMiddleware.validateError],
     userController.registerAdmin
   );
-  app.post('/albums/:id', authenticationMiddleware.verifyToken);
+  app.post('/albums/:id', [authenticationMiddleware.verifyToken], userController.buyAlbum);
 };

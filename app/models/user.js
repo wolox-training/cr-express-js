@@ -1,5 +1,3 @@
-const userAlbum = require('./userAlbum');
-
 module.exports = (sequelize, DataTypes) =>
   sequelize.define(
     'user',

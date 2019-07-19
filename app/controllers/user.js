@@ -6,6 +6,8 @@ const { ascOrder } = require('../constants');
 const { defaultOrderBy } = require('../constants');
 const { admin_role } = require('../../config').roles;
 const { regular_role } = require('../../config').roles;
+const albumService = require('../services/album');
+const authService = require('../services/authentication');
 
 const createUserObject = req => ({
   email: req.body.email,
@@ -77,3 +79,14 @@ exports.getAllUsers = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.buyAlbum = (req, res, next) =>
+  albumService
+    .getAlbumById(req.params.id)
+    .then(album => {
+      const user = authService.decodeToken(req.headers.authorization.split(' ')[1]);
+      return userService.buyAlbum(user, album).then(purchase => {
+        res.send(purchase);
+      });
+    })
+    .catch(next);
