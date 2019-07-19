@@ -161,19 +161,24 @@ describe('GET /users - list of users', () => {
     lastName: 'perez',
     password: 'asdasdasd'
   };
+  const checkOrder = (order, orderBy, arr) => {
+    if (order === 'ASC') {
+      return arr.every((value, index) => !index || value[orderBy] > arr[index - 1][orderBy]);
+    }
+    return arr.every((value, index) => !index || value[orderBy] < arr[index - 1][orderBy]);
+  };
   it('should response with 200 code', done => {
     createUserModel(userData).then(() => {
-      console.log('uno');
       createUserModel(anotherUser).then(() => {
         request(app)
           .get('/users')
           .set('Authorization', `Bearer ${token}`)
           .then(res => {
             expect(res.status).toBe(200);
-            expect(res.body.users.totalPages).toBe(1);
-            expect(res.body.users.users.count).toBe(2);
-            const arr = res.body.users.users.rows;
-            expect(arr.slice(1).every((item, i) => arr[i].email < item.email)).toBe(true);
+            expect(res.body.totalPages).toBe(1);
+            expect(res.body.users.count).toBe(2);
+            const arr = res.body.users.rows;
+            expect(checkOrder('ASC', 'email', arr)).toBe(true);
             done();
           });
       });
@@ -188,10 +193,10 @@ describe('GET /users - list of users', () => {
           .set('Authorization', `Bearer ${token}`)
           .then(res => {
             expect(res.status).toBe(200);
-            expect(res.body.users.totalPages).toBe(1);
-            expect(res.body.users.users.count).toBe(2);
-            const arr = res.body.users.users.rows;
-            expect(arr.slice(1).every((item, i) => arr[i].email > item.email)).toBe(true);
+            expect(res.body.totalPages).toBe(1);
+            expect(res.body.users.count).toBe(2);
+            const arr = res.body.users.rows;
+            expect(checkOrder('DESC', 'name', arr)).toBe(true);
             done();
           });
       });
