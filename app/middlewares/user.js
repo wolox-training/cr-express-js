@@ -1,8 +1,8 @@
 const { body, check } = require('express-validator/check');
 const { validationResult } = require('express-validator/check');
 const { badRequestError } = require('../errors');
-const ascOrder = 'ASC';
-const descOrder = 'DESC';
+const { ascOrder } = require('../constants');
+const { descOrder } = require('../constants');
 
 const validateEmailPassword = () => [
   body('email', 'email error')

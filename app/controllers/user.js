@@ -2,7 +2,8 @@ const { badRequestError } = require('../errors');
 const authenticationService = require('../services/authentication');
 const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
-const ascOrder = 'ASC';
+const { ascOrder } = require('../constants');
+const { defaultOrderBy } = require('../constants');
 const { admin_role } = require('../../config').roles;
 const { regular_role } = require('../../config').roles;
 
@@ -66,13 +67,13 @@ exports.getAllUsers = (req, res, next) => {
     limit,
     page,
     offset: (page - 1) * limit,
-    orderBy: req.query.orderBy || 'email',
+    orderBy: req.query.orderBy || defaultOrderBy,
     order: req.query.order || ascOrder
   };
   return userService
     .findAllPagination(paginationParams)
     .then(users => {
-      res.send({ usersPage: users });
+      res.send({ users });
     })
     .catch(next);
 };

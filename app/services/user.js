@@ -18,8 +18,7 @@ exports.findAllPagination = paginationObject =>
     })
     .then(users => ({
       users,
-      totalPages: calculateTotalPages(users.count, paginationObject.limit),
-      page: paginationObject.page
+      totalPages: calculateTotalPages(users.count, paginationObject.limit)
     }))
     .catch(error => {
       logger.info(error);
