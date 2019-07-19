@@ -177,8 +177,7 @@ describe('GET /users - list of users', () => {
             expect(res.status).toBe(200);
             expect(res.body.totalPages).toBe(1);
             expect(res.body.users.count).toBe(2);
-            const arr = res.body.users.rows;
-            expect(checkOrder('ASC', 'email', arr)).toBe(true);
+            expect(checkOrder('ASC', 'email', res.body.users.rows)).toBe(true);
             done();
           });
       });
@@ -195,8 +194,7 @@ describe('GET /users - list of users', () => {
             expect(res.status).toBe(200);
             expect(res.body.totalPages).toBe(1);
             expect(res.body.users.count).toBe(2);
-            const arr = res.body.users.rows;
-            expect(checkOrder('DESC', 'name', arr)).toBe(true);
+            expect(checkOrder('DESC', 'name', res.body.users.rows)).toBe(true);
             done();
           });
       });
