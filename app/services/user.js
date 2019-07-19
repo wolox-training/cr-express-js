@@ -2,6 +2,11 @@ const { conflictError, databaseError } = require('../errors');
 const userModel = require('../models').user;
 const logger = require('.././logger');
 
+exports.findOne = keyValues =>
+  userModel.findOne({ where: keyValues }).catch(error => {
+    throw databaseError(error);
+  });
+
 exports.createUser = user =>
   userModel
     .create({

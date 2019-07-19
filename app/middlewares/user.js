@@ -2,13 +2,7 @@ const { body } = require('express-validator/check');
 const { validationResult } = require('express-validator/check');
 const { badRequestError } = require('../errors');
 
-exports.validateSignup = () => [
-  body('name', 'name error')
-    .not()
-    .isEmpty(),
-  body('lastName', 'lastName error')
-    .not()
-    .isEmpty(),
+const validateEmailPassword = () => [
   body('email', 'email error')
     .not()
     .isEmpty()
@@ -21,6 +15,18 @@ exports.validateSignup = () => [
     .isLength({ min: 8 })
     .isAlphanumeric()
 ];
+
+exports.validateSignup = () => [
+  body('name', 'name error')
+    .not()
+    .isEmpty(),
+  body('lastName', 'lastName error')
+    .not()
+    .isEmpty(),
+  validateEmailPassword()
+];
+
+exports.validateSignin = () => [validateEmailPassword()];
 
 exports.validateError = (req, res, next) => {
   const errors = validationResult(req);
