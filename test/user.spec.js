@@ -162,13 +162,9 @@ describe('GET /users - list of users', () => {
     lastName: 'perez',
     password: 'asdasdasd'
   };
-  const checkOrder = (order, orderBy, arr) => {
-    if (order === 'ASC') {
-      return arr.every((value, index) => !index || value[orderBy] > arr[index - 1][orderBy]);
-    }
-    return arr.every((value, index) => !index || value[orderBy] < arr[index - 1][orderBy]);
-  };
-  it('should response with 200 code', done => {
+  const checkOrder = (orderBy, arr) =>
+    arr.every((value, index) => !index || value[orderBy] > arr[index - 1][orderBy]);
+  it('should succeed returning 200 code which request is with default params', done => {
     createUserModel(userData).then(() => {
       createUserModel(anotherUser).then(() => {
         request(app)
@@ -178,14 +174,14 @@ describe('GET /users - list of users', () => {
             expect(res.status).toBe(200);
             expect(res.body.totalPages).toBe(1);
             expect(res.body.users.count).toBe(2);
-            expect(checkOrder('ASC', 'email', res.body.users.rows)).toBe(true);
+            expect(checkOrder('email', res.body.users.rows)).toBe(true);
             done();
           });
       });
     });
   });
 
-  it('should response with 200 code', done => {
+  it('should succeed returning 200 code when passing params in request', done => {
     createUserModel(userData).then(() => {
       createUserModel(anotherUser).then(() => {
         request(app)
@@ -195,14 +191,14 @@ describe('GET /users - list of users', () => {
             expect(res.status).toBe(200);
             expect(res.body.totalPages).toBe(1);
             expect(res.body.users.count).toBe(2);
-            expect(checkOrder('DESC', 'name', res.body.users.rows)).toBe(true);
+            expect(checkOrder('name', res.body.users.rows)).toBe(false);
             done();
           });
       });
     });
   });
 
-  it('should response with 500 because invalid token', done => {
+  it('should response with 400 because invalid token', done => {
     request(app)
       .get('/users?limit=10&page=4')
       .set('Authorization', 'Bearer 12')
