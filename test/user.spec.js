@@ -159,20 +159,21 @@ describe('GET /users - list of users', () => {
     email: 'kevin@wolox.com.ar',
     name: 'kevin',
     lastName: 'perez',
-    password: '$2a$10$4sUmMDqL/Ux1rqGIyxka5OljqC.pZHyIPxvVsMsV6wc7Ro1xBHwQC'
+    password: 'asdasdasd'
   };
   it('should response with 200 code', done => {
     createUserModel(userData).then(() => {
+      console.log('uno');
       createUserModel(anotherUser).then(() => {
         request(app)
           .get('/users')
           .set('Authorization', `Bearer ${token}`)
           .then(res => {
             expect(res.status).toBe(200);
-            expect(res.body.usersPage.totalPages).toBe(1);
-            expect(res.body.usersPage.page).toBe(1);
-            expect(res.body.usersPage.users.count).toBe(2);
-            expect(res.body.usersPage.users.rows[0].email < res.body.usersPage.users.rows[1].email);
+            expect(res.body.users.totalPages).toBe(1);
+            expect(res.body.users.users.count).toBe(2);
+            const arr = res.body.users.users.rows;
+            expect(arr.slice(1).every((item, i) => arr[i].email < item.email)).toBe(true);
             done();
           });
       });
@@ -187,9 +188,10 @@ describe('GET /users - list of users', () => {
           .set('Authorization', `Bearer ${token}`)
           .then(res => {
             expect(res.status).toBe(200);
-            expect(res.body.usersPage.totalPages).toBe(1);
-            expect(res.body.usersPage.users.count).toBe(2);
-            expect(res.body.usersPage.users.rows[0].name > res.body.usersPage.users.rows[1].name);
+            expect(res.body.users.totalPages).toBe(1);
+            expect(res.body.users.users.count).toBe(2);
+            const arr = res.body.users.users.rows;
+            expect(arr.slice(1).every((item, i) => arr[i].email > item.email)).toBe(true);
             done();
           });
       });
