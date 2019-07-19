@@ -73,7 +73,7 @@ exports.getAllUsers = (req, res, next) => {
   return userService
     .findAllPagination(paginationParams)
     .then(users => {
-      res.send({ users });
+      res.send({ users: users.users, totalPages: users.totalPages });
     })
     .catch(next);
 };
