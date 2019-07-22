@@ -180,7 +180,7 @@ describe('GET /users - list of users', () => {
             expect(res.status).toBe(200);
             expect(res.body.totalPages).toBe(1);
             expect(res.body.users.count).toBe(2);
-            expect(checkOrder('email', res.body.users.rows)).toBe(true);
+            expect(checkOrder('ASC', 'email', res.body.users.rows)).toBe(true);
             done();
           });
       });
@@ -197,7 +197,7 @@ describe('GET /users - list of users', () => {
             expect(res.status).toBe(200);
             expect(res.body.totalPages).toBe(1);
             expect(res.body.users.count).toBe(2);
-            expect(checkOrder('name', res.body.users.rows)).toBe(false);
+            expect(checkOrder('DESC', 'name', res.body.users.rows)).toBe(true);
             done();
           });
       });
@@ -224,7 +224,7 @@ describe('POST /admin/users - signup admin users or update the user role to admi
       .send(user)
       .then(createdUser => createdUser);
 
-  it('should succeed returning 201 creating an user wich role is admin', done => {
+  it('should success creating an user wich role is admin', done => {
     createUserAdmin(userDataToEndpoint).then(res => {
       expect(res.status).toBe(201);
       expect(res.body.role).toBe('admin');
@@ -235,7 +235,7 @@ describe('POST /admin/users - signup admin users or update the user role to admi
     });
   });
 
-  it('should succeed returning 200 code updating an user wich role is regular', done => {
+  it('should success updating an user wich role is regular', done => {
     createUserModel(userData).then(createdUser => {
       expect(createdUser.role).toBe('regular');
       createUserAdmin(userDataToEndpoint).then(response => {
