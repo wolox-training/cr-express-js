@@ -258,21 +258,41 @@ describe('POST /admin/users - signup admin users or update the user role to admi
     });
   });
 });
-
 describe('/POST /albums/:id - user purchases an album', () => {
-  const token = authenticationService.generateToken(userData);
-
-  it('should succeed returning 200 code, when an user could bought a book', done => {
-    createUserModel(userData).then(() => {
+  it('should succees, an user buys a book', done => {
+    createUserModel(userData).then(createdUser => {
+      const token = authenticationService.generateToken(createdUser);
       request(app)
         .post('/albums/4')
         .set('Authorization', `Bearer ${token}`)
+        .send()
         .then(res => {
-          expect(res.body).toBe('');
           expect(res.status).toBe(200);
           expect(res.body.albumId).toBe(4);
-          expect(res.body.userId).toBe(userData.email);
+          expect(res.body.user).toBe(userData.email);
           done();
+        });
+    });
+  });
+  it('should fail because user tries to buy the same book', done => {
+    createUserModel(userData).then(createdUser => {
+      const token = authenticationService.generateToken(createdUser);
+      request(app)
+        .post('/albums/4')
+        .set('Authorization', `Bearer ${token}`)
+        .send()
+        .then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body.albumId).toBe(4);
+          request(app)
+            .post('/albums/4')
+            .set('Authorization', `Bearer ${token}`)
+            .send()
+            .then(response => {
+              expect(response.status).toBe(409);
+              expect(response.body.internal_code).toBe('conflict_error');
+              done();
+            });
         });
     });
   });
