@@ -26,7 +26,12 @@ exports.init = app => {
   );
   app.post(
     '/admin/users',
-    [userMiddleware.validateSignup(), userMiddleware.validateError],
+    [
+      authenticationMiddleware.verifyToken,
+      authenticationMiddleware.verifyRole,
+      userMiddleware.validateSignup(),
+      userMiddleware.validateError
+    ],
     userController.registerAdmin
   );
 };
