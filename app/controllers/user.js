@@ -86,7 +86,7 @@ exports.buyAlbum = (req, res, next) =>
     .then(album => {
       const user = authService.decodeToken(req.headers.authorization.split(' ')[1]);
       return userService.buyAlbum(user, album).then(purchase => {
-        res.send(purchase);
+        res.send({ user: user.email, albumId: purchase.albumId });
       });
     })
     .catch(next);

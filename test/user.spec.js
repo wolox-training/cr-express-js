@@ -163,9 +163,9 @@ describe('GET /users - list of users', () => {
   };
   const checkOrder = (orderBy, arr) =>
     arr.every((value, index) => !index || value[orderBy] > arr[index - 1][orderBy]);
+
   it('should succeed returning 200 code which request is with default params', done => {
     createUserModel(userData).then(() => {
-      console.log('uno');
       createUserModel(anotherUser).then(() => {
         request(app)
           .get('/users')
@@ -240,6 +240,25 @@ describe('POST /admin/users - signup admin users or update the user role to admi
           done();
         });
       });
+    });
+  });
+});
+
+describe('/POST /albums/:id - user purchases an album', () => {
+  const token = authenticationService.generateToken(userData);
+
+  it('should succeed returning 200 code, when an user could bought a book', done => {
+    createUserModel(userData).then(() => {
+      request(app)
+        .post('/albums/4')
+        .set('Authorization', `Bearer ${token}`)
+        .then(res => {
+          expect(res.body).toBe('');
+          expect(res.status).toBe(200);
+          expect(res.body.albumId).toBe(4);
+          expect(res.body.userId).toBe(userData.email);
+          done();
+        });
     });
   });
 });

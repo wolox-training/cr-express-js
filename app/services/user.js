@@ -71,7 +71,7 @@ exports.buyAlbum = (user, album) =>
     .catch(error => {
       logger.info(error);
       if (error.name === 'SequelizeUniqueConstraintError') {
-        throw conflictError('user already exists!');
+        throw conflictError('user has already bought this album!');
       }
       throw databaseError(error);
     });
