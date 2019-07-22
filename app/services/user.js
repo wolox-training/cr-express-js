@@ -2,6 +2,29 @@ const { conflictError, databaseError } = require('../errors');
 const userModel = require('../models').user;
 const logger = require('.././logger');
 
+const calculateTotalPages = (count, limit) => {
+  if (count === 0) {
+    return 1;
+  }
+  return Math.ceil(count / limit);
+};
+
+exports.findAllPagination = paginationObject =>
+  userModel
+    .findAndCountAll({
+      limit: paginationObject.limit,
+      offset: paginationObject.offset,
+      order: [[paginationObject.orderBy, paginationObject.order]]
+    })
+    .then(users => ({
+      users,
+      totalPages: calculateTotalPages(users.count, paginationObject.limit)
+    }))
+    .catch(error => {
+      logger.info(error);
+      throw databaseError(error);
+    });
+
 exports.findOne = keyValues =>
   userModel.findOne({ where: keyValues }).catch(error => {
     throw databaseError(error);
