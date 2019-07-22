@@ -2,7 +2,7 @@ const authService = require('../services/authentication');
 const { badRequestError } = require('../errors');
 
 exports.verifyToken = (req, res, next) => {
-  const token = req.headers.authorization.split(' ')[1];
+  const token = req.headers.authorization;
   if (token) {
     try {
       authService.decodeToken(token);
@@ -14,9 +14,8 @@ exports.verifyToken = (req, res, next) => {
   return next(badRequestError('invalid token'));
 };
 
-exports.verifyTokenAndRole = (req, res, next) => {
-  const token = req.headers.authorization.split(' ')[1];
-  const user = authService.decodeToken(token);
+exports.verifyRole = (req, res, next) => {
+  const user = authService.decodeToken(req.headers.authorization);
   if (user.role === 'admin') {
     return next();
   }
