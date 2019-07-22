@@ -5,7 +5,8 @@ exports.generateToken = user => {
   const tokenPayload = {
     email: user.email,
     name: user.name,
-    lastName: user.lastName
+    lastName: user.lastName,
+    role: user.role
   };
   return jwt.encode(tokenPayload, secret);
 };
