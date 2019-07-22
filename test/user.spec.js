@@ -248,9 +248,9 @@ describe('POST /admin/users - signup admin users or update the user role to admi
   it('should success updating an user wich role is regular', done => {
     createUserModel(userData).then(createdUser => {
       expect(createdUser.role).toBe('regular');
-      createUserAdmin(userDataToEndpoint).then(response => {
-        expect(response.status).toBe(200);
-        expect(response.body.role).toBe('admin');
+      createUserAdmin(userDataToEndpoint).then(createdAdmin => {
+        expect(createdAdmin.status).toBe(200);
+        expect(createdAdmin.body.role).toBe('admin');
         userModel.findOne({ where: { email: userData.email } }).then(user => {
           expect(user.role).toBe('admin');
           done();
