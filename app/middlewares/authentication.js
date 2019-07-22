@@ -13,3 +13,11 @@ exports.verifyToken = (req, res, next) => {
   }
   return next(badRequestError('invalid token'));
 };
+
+exports.verifyRole = (req, res, next) => {
+  const user = authService.decodeToken(req.headers.authorization);
+  if (user.role === 'admin') {
+    return next();
+  }
+  return next(badRequestError('not allowed'));
+};
