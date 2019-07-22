@@ -85,7 +85,7 @@ describe('POST /signup - create users', () => {
 });
 
 describe('POST /users/sessions  - signIn user', () => {
-  it('should succeed returning the generated token', done => {
+  it('should succeed with the generated token', done => {
     const signInDataToEndpoint = {
       email: 'jose@wolox.com.ar',
       password: 'asdasdasd4566'
@@ -102,7 +102,7 @@ describe('POST /users/sessions  - signIn user', () => {
     });
   });
 
-  it('should fail returning 400 code error because uncompleted fields', done => {
+  it('should fail for uncompleted fields', done => {
     const signInData = {
       email: 'hectorwolox.com.ar',
       password: ''
@@ -117,7 +117,7 @@ describe('POST /users/sessions  - signIn user', () => {
       });
   });
 
-  it('should fail returning 400 code error because invalid password', done => {
+  it('should fail for invalid password', done => {
     const signInData = {
       email: 'jose@wolox.com.ar',
       password: 'asdasdasd5'
@@ -135,7 +135,7 @@ describe('POST /users/sessions  - signIn user', () => {
     });
   });
 
-  it('should fail returning 400 code error because the user email does not exists', done => {
+  it('should fail because the email does not exists', done => {
     const signInData = {
       email: 'hector@wolox.com.ar',
       password: 'asasdasdasds3'
@@ -162,9 +162,16 @@ describe('GET /users - list of users', () => {
     lastName: 'perez',
     password: 'asdasdasd'
   };
-  const checkOrder = (orderBy, arr) =>
-    arr.every((value, index) => !index || value[orderBy] > arr[index - 1][orderBy]);
-  it('should succeed returning 200 code which request is with default params', done => {
+  const compare = (order, firstValue, secondValue) => {
+    if (order === 'ASC') {
+      return firstValue > secondValue;
+    }
+    return firstValue < secondValue;
+  };
+  const checkOrder = (order, orderBy, arr) =>
+    arr.every((value, index) => !index || compare(order, value[orderBy], arr[index - 1][orderBy]));
+
+  it('should succeed with default params', done => {
     createUserModel(userData).then(() => {
       createUserModel(anotherUser).then(() => {
         request(app)
@@ -174,14 +181,14 @@ describe('GET /users - list of users', () => {
             expect(res.status).toBe(200);
             expect(res.body.totalPages).toBe(1);
             expect(res.body.users.count).toBe(2);
-            expect(checkOrder('email', res.body.users.rows)).toBe(true);
+            expect(checkOrder('ASC', 'email', res.body.users.rows)).toBe(true);
             done();
           });
       });
     });
   });
 
-  it('should succeed returning 200 code when passing params in request', done => {
+  it('should succeed with specified params', done => {
     createUserModel(userData).then(() => {
       createUserModel(anotherUser).then(() => {
         request(app)
@@ -191,14 +198,14 @@ describe('GET /users - list of users', () => {
             expect(res.status).toBe(200);
             expect(res.body.totalPages).toBe(1);
             expect(res.body.users.count).toBe(2);
-            expect(checkOrder('name', res.body.users.rows)).toBe(false);
+            expect(checkOrder('DESC', 'name', res.body.users.rows)).toBe(true);
             done();
           });
       });
     });
   });
 
-  it('should response with 400 because invalid token', done => {
+  it('should fail for invalid token', done => {
     request(app)
       .get('/users?limit=10&page=4')
       .set('Authorization', 'Bearer 12')
