@@ -231,8 +231,7 @@ describe('POST /admin/users - signup admin users or update the user role to admi
     request(app)
       .post('/admin/users')
       .set('Authorization', `Bearer ${token}`)
-      .send(user)
-      .then(createdUser => createdUser);
+      .send(user);
 
   it('should success creating an user wich role is admin', done => {
     createUserAdmin(userDataToEndpoint).then(res => {
