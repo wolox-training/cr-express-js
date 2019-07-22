@@ -22,6 +22,7 @@ const userData = {
   lastName: 'perez',
   password: '$2a$10$4sUmMDqL/Ux1rqGIyxka5OljqC.pZHyIPxvVsMsV6wc7Ro1xBHwQC'
 };
+
 const userDataToEndpoint = {
   email: 'jose@wolox.com.ar',
   name: 'jose',
@@ -218,9 +219,18 @@ describe('GET /users - list of users', () => {
 });
 
 describe('POST /admin/users - signup admin users or update the user role to admin', () => {
+  const adminUser = {
+    email: 'jorge@wolox.com.ar',
+    name: 'jorge',
+    lastName: 'perez',
+    password: 'hola123456',
+    role: 'admin'
+  };
+  const token = authenticationService.generateToken(adminUser);
   const createUserAdmin = user =>
     request(app)
       .post('/admin/users')
+      .set('Authorization', `Bearer ${token}`)
       .send(user)
       .then(createdUser => createdUser);
 
