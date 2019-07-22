@@ -116,7 +116,7 @@ describe('POST /users/sessions  - signIn user', () => {
       });
   });
 
-  it('should fail for invalid password', done => {
+  it('should fail for invalid password ', done => {
     const signInData = {
       email: 'jose@wolox.com.ar',
       password: 'asdasdasd5'
