@@ -31,7 +31,7 @@ describe('POST /signup - create users', () => {
     password: 'asdasdasd4566'
   };
 
-  it('should succeed returning the created user', done => {
+  it('should success returning the created user', done => {
     createUser(userDataToEndpoint).then(res => {
       expect(res.status).toBe(201);
       expect(res.body.email).toBe(userDataToEndpoint.email);
@@ -85,7 +85,7 @@ describe('POST /signup - create users', () => {
 });
 
 describe('POST /users/sessions  - signIn user', () => {
-  it('should succeed with the generated token', done => {
+  it('should success with the generated token', done => {
     const signInDataToEndpoint = {
       email: 'jose@wolox.com.ar',
       password: 'asdasdasd4566'
@@ -171,7 +171,7 @@ describe('GET /users - list of users', () => {
   const checkOrder = (order, orderBy, arr) =>
     arr.every((value, index) => !index || compare(order, value[orderBy], arr[index - 1][orderBy]));
 
-  it('should succeed with default params', done => {
+  it('should success with default params', done => {
     createUserModel(userData).then(() => {
       createUserModel(anotherUser).then(() => {
         request(app)
@@ -188,7 +188,7 @@ describe('GET /users - list of users', () => {
     });
   });
 
-  it('should succeed with specified params', done => {
+  it('should success with specified params', done => {
     createUserModel(userData).then(() => {
       createUserModel(anotherUser).then(() => {
         request(app)
