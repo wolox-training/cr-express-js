@@ -235,10 +235,10 @@ describe('POST /admin/users - signup admin users or update the user role to admi
 
   it('should success creating an user wich role is admin', done => {
     createUserAdmin(userDataToEndpoint).then(res => {
-      expect(res.status).toBe(201);
+      expect(res.status).toBe(200);
       expect(res.body.role).toBe('admin');
-      userModel.findOne({ where: { email: userData.email } }).then(user => {
-        expect(user.role).toBe('admin');
+      userModel.findOne({ where: { email: userData.email } }).then(userFound => {
+        expect(userFound.role).toBe('admin');
         done();
       });
     });
@@ -250,11 +250,27 @@ describe('POST /admin/users - signup admin users or update the user role to admi
       createUserAdmin(userDataToEndpoint).then(createdAdmin => {
         expect(createdAdmin.status).toBe(200);
         expect(createdAdmin.body.role).toBe('admin');
-        userModel.findOne({ where: { email: userData.email } }).then(user => {
-          expect(user.role).toBe('admin');
+        userModel.findOne({ where: { email: userData.email } }).then(userFound => {
+          expect(userFound.role).toBe('admin');
           done();
         });
       });
+    });
+  });
+
+  it('should fail for not allowed role', done => {
+    createUserModel(userData).then(createdUser => {
+      expect(createdUser.role).toBe('regular');
+      const tokenRegularUser = authenticationService.generateToken(createdUser);
+      request(app)
+        .post('/admin/users')
+        .set('Authorization', `Bearer ${tokenRegularUser}`)
+        .send(userDataToEndpoint)
+        .then(res => {
+          expect(res.body.message).toBe('not allowed');
+          expect(res.status).toBe(400);
+          done();
+        });
     });
   });
 });

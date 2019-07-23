@@ -48,10 +48,6 @@ const config = {
   },
   encryption: {
     salt_sync: process.env.BCRYPT_SALT
-  },
-  roles: {
-    admin_role: process.env.ROLE_ADMIN,
-    regular_role: process.env.ROLE_REGULAR
   }
 };
 

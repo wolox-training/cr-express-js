@@ -28,7 +28,7 @@ exports.init = app => {
     '/admin/users',
     [
       authenticationMiddleware.verifyToken,
-      authenticationMiddleware.verifyRole,
+      authenticationMiddleware.verifyAdminRole,
       userMiddleware.validateSignup(),
       userMiddleware.validateError
     ],
