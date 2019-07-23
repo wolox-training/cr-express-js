@@ -1,3 +1,4 @@
+/* eslint-disable new-cap*/
 module.exports = (sequelize, DataTypes) =>
   sequelize.define(
     'user',
@@ -26,5 +27,7 @@ module.exports = (sequelize, DataTypes) =>
         defaultValue: 'regular'
       }
     },
-    { underscored: true }
+    {
+      underscored: true
+    }
   );

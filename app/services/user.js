@@ -1,6 +1,7 @@
 const { conflictError, databaseError } = require('../errors');
 const userModel = require('../models').user;
 const logger = require('.././logger');
+const { admin_role } = require('../constants');
 
 const calculateTotalPages = (count, limit) => {
   if (count === 0) {
@@ -41,7 +42,6 @@ exports.createUser = user =>
     })
     .then(userCreated => {
       logger.info(`user with name ${userCreated.name} created!`);
-      logger.info('HOLAAAAA');
       logger.info(JSON.stringify(userCreated));
       return userCreated;
     })
@@ -53,8 +53,24 @@ exports.createUser = user =>
       throw databaseError(error);
     });
 
-exports.updateUserRole = user =>
-  user.save().catch(error => {
-    logger.info(error);
-    throw databaseError(error);
-  });
+exports.updateOrCreate = user =>
+  userModel
+    .findOrCreate({
+      where: { email: user.email },
+      defaults: {
+        name: user.name,
+        lastName: user.lastName,
+        password: user.password,
+        role: admin_role
+      }
+    })
+    .spread((userFound, userCreated) => {
+      if (userFound) {
+        return userFound.update({ role: admin_role });
+      }
+      return userCreated;
+    })
+    .catch(error => {
+      logger.info(error);
+      throw databaseError(error);
+    });

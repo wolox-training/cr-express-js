@@ -4,8 +4,6 @@ const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
 const { ascOrder } = require('../constants');
 const { defaultOrderBy } = require('../constants');
-const { admin_role } = require('../../config').roles;
-const { regular_role } = require('../../config').roles;
 
 const createUserObject = req => ({
   email: req.body.email,
@@ -16,7 +14,6 @@ const createUserObject = req => ({
 
 exports.register = (req, res, next) => {
   const user = createUserObject(req);
-  user.role = regular_role;
   return userService
     .createUser(user)
     .then(userCreated => {
@@ -27,20 +24,10 @@ exports.register = (req, res, next) => {
 
 exports.registerAdmin = (req, res, next) => {
   const user = createUserObject(req);
-  user.role = admin_role;
-  userService
-    .findOne({ email: user.email })
-    .then(usr => {
-      if (usr) {
-        usr.role = admin_role;
-        userService.updateUserRole(usr).then(updatedUser => {
-          res.send(200, updatedUser);
-        });
-      } else {
-        userService.createUser(user).then(createdUser => {
-          res.send(201, createdUser);
-        });
-      }
+  return userService
+    .updateOrCreate(user)
+    .then(savedUser => {
+      res.send(savedUser);
     })
     .catch(next);
 };
@@ -48,9 +35,9 @@ exports.registerAdmin = (req, res, next) => {
 exports.signIn = (req, res, next) =>
   userService
     .findOne({ email: req.body.email })
-    .then(user => {
-      if (user && encryptionService.validatePasssword(req.body.password, user.password)) {
-        const token = authenticationService.generateToken(user);
+    .then(userFound => {
+      if (userFound && encryptionService.validatePasssword(req.body.password, userFound.password)) {
+        const token = authenticationService.generateToken(userFound);
         res.setHeader('Authorization', `Bearer ${token}`);
         res.end();
       } else {
