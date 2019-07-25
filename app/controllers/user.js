@@ -4,7 +4,7 @@ const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
 const { ascOrder } = require('../constants');
 const { defaultOrderBy } = require('../constants');
-const albumService = require('../services/album');
+// const albumService = require('../services/album');
 const authService = require('../services/authentication');
 
 const createUserObject = req => ({
@@ -67,13 +67,12 @@ exports.getAllUsers = (req, res, next) => {
     .catch(next);
 };
 
-exports.buyAlbum = (req, res, next) =>
-  albumService
-    .getAlbumById(req.params.id)
-    .then(album => {
-      const user = authService.decodeToken(req.headers.authorization);
-      return userService.buyAlbum(user, album).then(purchase => {
-        res.send({ user: user.email, albumId: purchase.albumId });
-      });
+exports.buyAlbum = (req, res, next) => {
+  const user = authService.decodeToken(req.headers.authorization);
+  return userService
+    .buyAlbum(user, req.params.id)
+    .then(purchase => {
+      res.send({ user: user.email, albumId: purchase.albumId });
     })
     .catch(next);
+};

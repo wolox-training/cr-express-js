@@ -4,6 +4,7 @@ const userController = require('./controllers/user');
 const userMiddleware = require('./middlewares/user');
 const authenticationMiddleware = require('./middlewares/authentication');
 const validatorErrorMiddleware = require('./middlewares/expressValidatorError');
+const albumMiddleware = require('./middlewares/album');
 
 exports.init = app => {
   app.get('/health', healthCheck);
@@ -40,5 +41,9 @@ exports.init = app => {
     ],
     userController.registerAdmin
   );
-  app.post('/albums/:id', [authenticationMiddleware.verifyToken], userController.buyAlbum);
+  app.post(
+    '/albums/:id',
+    [authenticationMiddleware.verifyToken, albumMiddleware.verifyAlbumId],
+    userController.buyAlbum
+  );
 };

@@ -59,11 +59,11 @@ exports.updateUserRole = user =>
     throw databaseError(error);
   });
 
-exports.buyAlbum = (user, album) =>
+exports.buyAlbum = (user, albumId) =>
   userAlbumModel
     .create({
       userId: user.id,
-      albumId: album.id
+      albumId
     })
     .then(purchase => {
       logger.info(`album ${purchase.albumId} bought by userid ${purchase.userId}`);

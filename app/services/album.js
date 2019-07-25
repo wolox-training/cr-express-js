@@ -1,6 +1,6 @@
 const rp = require('request-promise');
 const { albums_api } = require('../../config').api_services;
-const { defaultError } = require('../errors');
+const { defaultError, badRequestError } = require('../errors');
 
 const options = url => ({
   method: 'GET',
@@ -21,4 +21,4 @@ exports.getPhotosAlbum = id =>
 exports.getAlbumById = id =>
   rp(options(`albums/${id}`))
     .then(res => res)
-    .catch(err => Promise.reject(defaultError(err.message)));
+    .catch(() => Promise.reject(badRequestError('invalid id')));

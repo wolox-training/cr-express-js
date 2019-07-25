@@ -9,6 +9,7 @@ const createUser = user =>
   request(app)
     .post('/users')
     .send(user);
+
 const createUserModel = user =>
   userModel.create({
     email: user.email,
@@ -16,18 +17,21 @@ const createUserModel = user =>
     lastName: user.lastName,
     password: user.password
   });
+
 const userData = {
   email: 'jose@wolox.com.ar',
   name: 'jose',
   lastName: 'perez',
   password: '$2a$10$4sUmMDqL/Ux1rqGIyxka5OljqC.pZHyIPxvVsMsV6wc7Ro1xBHwQC'
 };
+
 const userDataToEndpoint = {
   email: 'jose@wolox.com.ar',
   name: 'jose',
   lastName: 'perez',
   password: 'asdasdasd4566'
 };
+
 describe('POST /signup - create users', () => {
   it('should success returning the created user', done => {
     createUser(userDataToEndpoint).then(res => {
@@ -39,6 +43,7 @@ describe('POST /signup - create users', () => {
       });
     });
   });
+
   it('should fail for the existence of the email', done => {
     createUserModel(userData).then(() => {
       request(app)
@@ -51,6 +56,7 @@ describe('POST /signup - create users', () => {
         });
     });
   });
+
   it('should fail for invalid password', done => {
     const userDataWrongPassword = {
       email: 'jose@wolox.com.ar',
@@ -64,6 +70,7 @@ describe('POST /signup - create users', () => {
       done();
     });
   });
+
   it('should fail for uncompleted fields', done => {
     const userDataUncompletedFields = {
       email: '',
@@ -95,6 +102,7 @@ describe('POST /users/sessions  - signIn user', () => {
         });
     });
   });
+
   it('should fail for uncompleted fields', done => {
     const signInData = {
       email: 'hectorwolox.com.ar',
@@ -109,6 +117,7 @@ describe('POST /users/sessions  - signIn user', () => {
         done();
       });
   });
+
   it('should fail for invalid password', done => {
     const signInData = {
       email: 'jose@wolox.com.ar',
@@ -126,6 +135,7 @@ describe('POST /users/sessions  - signIn user', () => {
         });
     });
   });
+
   it('should fail because the email does not exists', done => {
     const signInData = {
       email: 'hector@wolox.com.ar',
@@ -144,6 +154,7 @@ describe('POST /users/sessions  - signIn user', () => {
     });
   });
 });
+
 describe('GET /users - list of users', () => {
   const token = authenticationService.generateToken(userData);
   const anotherUser = {
@@ -160,6 +171,7 @@ describe('GET /users - list of users', () => {
   };
   const checkOrder = (order, orderBy, arr) =>
     arr.every((value, index) => !index || compare(order, value[orderBy], arr[index - 1][orderBy]));
+
   it('should success with default params', done => {
     createUserModel(userData).then(() => {
       createUserModel(anotherUser).then(() => {
@@ -176,6 +188,7 @@ describe('GET /users - list of users', () => {
       });
     });
   });
+
   it('should success with specified params', done => {
     createUserModel(userData).then(() => {
       createUserModel(anotherUser).then(() => {
@@ -192,6 +205,7 @@ describe('GET /users - list of users', () => {
       });
     });
   });
+
   it('should fail for invalid token', done => {
     request(app)
       .get('/users?limit=10&page=4')
@@ -204,6 +218,7 @@ describe('GET /users - list of users', () => {
       });
   });
 });
+
 describe('POST /admin/users - signup admin users or update the user role to admin', () => {
   const adminUser = {
     email: 'jorge@wolox.com.ar',
@@ -213,11 +228,13 @@ describe('POST /admin/users - signup admin users or update the user role to admi
     role: 'admin'
   };
   const token = authenticationService.generateToken(adminUser);
+
   const createUserAdmin = user =>
     request(app)
       .post('/admin/users')
       .set('Authorization', `Bearer ${token}`)
       .send(user);
+
   it('should success creating an user wich role is admin', done => {
     createUserAdmin(userDataToEndpoint).then(res => {
       expect(res.status).toBe(200);
@@ -228,6 +245,7 @@ describe('POST /admin/users - signup admin users or update the user role to admi
       });
     });
   });
+
   it('should success updating an user wich role is regular', done => {
     createUserModel(userData).then(createdUser => {
       expect(createdUser.role).toBe(default_role);
@@ -241,6 +259,7 @@ describe('POST /admin/users - signup admin users or update the user role to admi
       });
     });
   });
+
   it('should fail for not allowed role', done => {
     createUserModel(userData).then(createdUser => {
       expect(createdUser.role).toBe(default_role);
@@ -254,45 +273,6 @@ describe('POST /admin/users - signup admin users or update the user role to admi
           expect(res.body.internal_code).toBe('unauthorized_error');
           expect(res.status).toBe(401);
           done();
-        });
-    });
-  });
-});
-describe('/POST /albums/:id - user purchases an album', () => {
-  it('should succees, an user buys a book', done => {
-    createUserModel(userData).then(createdUser => {
-      const token = authenticationService.generateToken(createdUser);
-      request(app)
-        .post('/albums/4')
-        .set('Authorization', `Bearer ${token}`)
-        .send()
-        .then(res => {
-          expect(res.status).toBe(200);
-          expect(res.body.albumId).toBe(4);
-          expect(res.body.user).toBe(userData.email);
-          done();
-        });
-    });
-  });
-  it('should fail because user tries to buy the same book', done => {
-    createUserModel(userData).then(createdUser => {
-      const token = authenticationService.generateToken(createdUser);
-      request(app)
-        .post('/albums/4')
-        .set('Authorization', `Bearer ${token}`)
-        .send()
-        .then(res => {
-          expect(res.status).toBe(200);
-          expect(res.body.albumId).toBe(4);
-          request(app)
-            .post('/albums/4')
-            .set('Authorization', `Bearer ${token}`)
-            .send()
-            .then(response => {
-              expect(response.status).toBe(409);
-              expect(response.body.internal_code).toBe('conflict_error');
-              done();
-            });
         });
     });
   });
