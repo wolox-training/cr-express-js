@@ -2,6 +2,8 @@ const request = require('supertest');
 const app = require('.././app');
 const userModel = require('../app/models').user;
 const authenticationService = require('./../app/services/authentication');
+const { default_role } = require('../app/constants');
+const { admin_role } = require('../app/constants');
 
 const createUser = user =>
   request(app)
@@ -236,9 +238,9 @@ describe('POST /admin/users - signup admin users or update the user role to admi
   it('should success creating an user wich role is admin', done => {
     createUserAdmin(userDataToEndpoint).then(res => {
       expect(res.status).toBe(200);
-      expect(res.body.role).toBe('admin');
+      expect(res.body.role).toBe(admin_role);
       userModel.findOne({ where: { email: userData.email } }).then(userFound => {
-        expect(userFound.role).toBe('admin');
+        expect(userFound.role).toBe(admin_role);
         done();
       });
     });
@@ -246,12 +248,12 @@ describe('POST /admin/users - signup admin users or update the user role to admi
 
   it('should success updating an user wich role is regular', done => {
     createUserModel(userData).then(createdUser => {
-      expect(createdUser.role).toBe('regular');
+      expect(createdUser.role).toBe(default_role);
       createUserAdmin(userDataToEndpoint).then(createdAdmin => {
         expect(createdAdmin.status).toBe(200);
-        expect(createdAdmin.body.role).toBe('admin');
+        expect(createdAdmin.body.role).toBe(admin_role);
         userModel.findOne({ where: { email: userData.email } }).then(userFound => {
-          expect(userFound.role).toBe('admin');
+          expect(userFound.role).toBe(admin_role);
           done();
         });
       });
@@ -260,7 +262,7 @@ describe('POST /admin/users - signup admin users or update the user role to admi
 
   it('should fail for not allowed role', done => {
     createUserModel(userData).then(createdUser => {
-      expect(createdUser.role).toBe('regular');
+      expect(createdUser.role).toBe(default_role);
       const tokenRegularUser = authenticationService.generateToken(createdUser);
       request(app)
         .post('/admin/users')
