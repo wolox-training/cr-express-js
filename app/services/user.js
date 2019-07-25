@@ -52,7 +52,7 @@ exports.createUser = user =>
       throw databaseError(error);
     });
 
-exports.updateOrCreate = user =>
+exports.updateOrCreateAdmin = user =>
   userModel
     .findOrCreate({
       where: { email: user.email },

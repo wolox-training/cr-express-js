@@ -25,7 +25,7 @@ exports.register = (req, res, next) => {
 exports.registerAdmin = (req, res, next) => {
   const user = createUserObject(req);
   return userService
-    .updateOrCreate(user)
+    .updateOrCreateAdmin(user)
     .then(savedUser => {
       res.send(savedUser);
     })

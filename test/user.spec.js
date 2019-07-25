@@ -268,7 +268,8 @@ describe('POST /admin/users - signup admin users or update the user role to admi
         .send(userDataToEndpoint)
         .then(res => {
           expect(res.body.message).toBe('not allowed');
-          expect(res.status).toBe(400);
+          expect(res.body.internal_code).toBe('unauthorized_error');
+          expect(res.status).toBe(401);
           done();
         });
     });
