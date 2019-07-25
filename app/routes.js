@@ -3,6 +3,7 @@ const albumController = require('./controllers/album');
 const userController = require('./controllers/user');
 const userMiddleware = require('./middlewares/user');
 const authenticationMiddleware = require('./middlewares/authentication');
+const validatorErrorMiddleware = require('./middlewares/expressValidatorError');
 
 exports.init = app => {
   app.get('/health', healthCheck);
@@ -10,27 +11,32 @@ exports.init = app => {
   app.get('/albums/:id/photos', albumController.getPhotosAlbum);
   app.post(
     '/users',
-    [userMiddleware.validateSignup(), userMiddleware.validateError],
+    [userMiddleware.validateSignup(), validatorErrorMiddleware.validateError],
     userController.register
   );
 
   app.post(
     '/users/sessions',
-    [userMiddleware.validateSignin(), userMiddleware.validateError],
+    [userMiddleware.validateEmailPassword(), validatorErrorMiddleware.validateError],
     userController.signIn
   );
   app.get(
     '/users',
-    [authenticationMiddleware.verifyToken, userMiddleware.checkOrder(), userMiddleware.validateError],
+    [
+      authenticationMiddleware.verifyTokenFormat(),
+      userMiddleware.checkOrder(),
+      validatorErrorMiddleware.validateError,
+      authenticationMiddleware.verifyToken
+    ],
     userController.getAllUsers
   );
   app.post(
     '/admin/users',
     [
       authenticationMiddleware.verifyToken,
-      authenticationMiddleware.verifyRole,
+      authenticationMiddleware.verifyAdminRole,
       userMiddleware.validateSignup(),
-      userMiddleware.validateError
+      validatorErrorMiddleware.validateError
     ],
     userController.registerAdmin
   );

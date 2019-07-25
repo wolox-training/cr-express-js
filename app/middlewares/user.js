@@ -1,10 +1,8 @@
 const { body, check } = require('express-validator/check');
-const { validationResult } = require('express-validator/check');
-const { badRequestError } = require('../errors');
 const { ascOrder } = require('../constants');
 const { descOrder } = require('../constants');
 
-const validateEmailPassword = () => [
+exports.validateEmailPassword = () => [
   body('email', 'email error')
     .not()
     .isEmpty()
@@ -25,18 +23,8 @@ exports.validateSignup = () => [
   body('lastName', 'lastName error')
     .not()
     .isEmpty(),
-  validateEmailPassword()
+  this.validateEmailPassword()
 ];
-
-exports.validateSignin = () => [validateEmailPassword()];
-
-exports.validateError = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(badRequestError(errors.array()));
-  }
-  return next();
-};
 
 exports.checkOrder = () => [
   check('order')

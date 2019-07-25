@@ -1,3 +1,7 @@
+/* eslint-disable new-cap*/
+const { default_role } = require('../constants');
+const { admin_role } = require('../constants');
+
 module.exports = (sequelize, DataTypes) =>
   sequelize.define(
     'user',
@@ -21,10 +25,12 @@ module.exports = (sequelize, DataTypes) =>
         allowNull: false
       },
       role: {
-        type: DataTypes.ENUM(['regular', 'admin']),
+        type: DataTypes.ENUM([default_role, admin_role]),
         allowNUll: false,
-        defaultValue: 'regular'
+        defaultValue: default_role
       }
     },
-    { underscored: true }
+    {
+      underscored: true
+    }
   );

@@ -2,6 +2,7 @@ const { conflictError, databaseError } = require('../errors');
 const userModel = require('../models').user;
 const userAlbumModel = require('../models').user_album;
 const logger = require('.././logger');
+const { admin_role } = require('../constants');
 
 const calculateTotalPages = (count, limit) => {
   if (count === 0) {
@@ -73,5 +74,27 @@ exports.buyAlbum = (user, album) =>
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw conflictError('user has already bought this album!');
       }
+      throw databaseError(error);
+    });
+
+exports.updateOrCreateAdmin = user =>
+  userModel
+    .findOrCreate({
+      where: { email: user.email },
+      defaults: {
+        name: user.name,
+        lastName: user.lastName,
+        password: user.password,
+        role: admin_role
+      }
+    })
+    .spread((userFound, userCreated) => {
+      if (userFound) {
+        return userFound.update({ role: admin_role });
+      }
+      return userCreated;
+    })
+    .catch(error => {
+      logger.info(error);
       throw databaseError(error);
     });
