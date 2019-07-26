@@ -11,20 +11,20 @@ exports.init = app => {
   app.get('/albums/:id/photos', albumController.getPhotosAlbum);
   app.post(
     '/users',
-    [userMiddleware.validateSignup(), validatorErrorMiddleware.validateError],
+    [userMiddleware.validateSignup, validatorErrorMiddleware.validateError],
     userController.register
   );
 
   app.post(
     '/users/sessions',
-    [userMiddleware.validateEmailPassword(), validatorErrorMiddleware.validateError],
+    [userMiddleware.validateEmailPassword, validatorErrorMiddleware.validateError],
     userController.signIn
   );
   app.get(
     '/users',
     [
-      authenticationMiddleware.verifyTokenFormat(),
-      userMiddleware.checkOrder(),
+      authenticationMiddleware.verifyTokenFormat,
+      userMiddleware.checkOrder,
       validatorErrorMiddleware.validateError,
       authenticationMiddleware.verifyToken
     ],
@@ -35,7 +35,7 @@ exports.init = app => {
     [
       authenticationMiddleware.verifyToken,
       authenticationMiddleware.verifyAdminRole,
-      userMiddleware.validateSignup(),
+      userMiddleware.validateSignup,
       validatorErrorMiddleware.validateError
     ],
     userController.registerAdmin
