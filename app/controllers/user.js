@@ -4,7 +4,6 @@ const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
 const { ascOrder } = require('../constants');
 const { defaultOrderBy } = require('../constants');
-const authService = require('../services/authentication');
 const albumService = require('../services/album');
 
 const createUserObject = req => ({
@@ -67,15 +66,13 @@ exports.getAllUsers = (req, res, next) => {
     .catch(next);
 };
 
-exports.buyAlbum = (req, res, next) => {
-  const user = authService.decodeToken(req.headers.authorization);
-  return userService
-    .buyAlbum(user, req.params.id)
+exports.buyAlbum = (req, res, next) =>
+  userService
+    .buyAlbum(req.userPayload, req.params.id)
     .then(purchase => {
-      res.send({ user: user.email, albumId: purchase.albumId });
+      res.send({ user: req.userPayload.email, albumId: purchase.albumId });
     })
     .catch(next);
-};
 
 exports.listAlbumsUserOrUsers = (req, res, next) => {
   const keyValue = { userId: req.params.user_id };
