@@ -4,7 +4,6 @@ const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
 const { ascOrder } = require('../constants');
 const { defaultOrderBy } = require('../constants');
-// const albumService = require('../services/album');
 const authService = require('../services/authentication');
 
 const createUserObject = req => ({
