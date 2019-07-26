@@ -1,8 +1,9 @@
 const request = require('supertest');
-const app = require('.././app');
+const app = require('../app');
 const userModel = require('../app/models').user;
-const userService = require('../app/services/user');
-const authenticationService = require('./../app/services/authentication');
+const userAlbumModel = require('../app/models').user_album;
+const authenticationService = require('../app/services/authentication');
+jest.mock('../app/services/album');
 
 const createUserModel = user =>
   userModel.create({
@@ -20,11 +21,6 @@ const userData = {
   role: 'regular'
 };
 
-/* const mockAlbum = {
-  id: 1,
-  title: 'Harry Potter'
-};*/
-
 describe('/POST /albums/:id - user purchases an album', () => {
   it('should success, an user buys a book', done => {
     createUserModel(userData).then(createdUser => {
@@ -34,15 +30,12 @@ describe('/POST /albums/:id - user purchases an album', () => {
         .set('Authorization', `Bearer ${token}`)
         .send()
         .then(res => {
-          expect(res.status).toBe(200);
-          expect(res.body.albumId).toBe(4);
-          expect(res.body.user).toBe(userData.email);
-          done();
-        })
-        .catch(() => {
-          userService.buyAlbum(userData, 4).then(purchase => {
-            expect(purchase.email).toBe(userData.email);
-            expect(purchase.albumId).toBe(4);
+          userAlbumModel.findOne({ where: { userId: 1, albumId: 4 } }).then(userPurchaseFound => {
+            expect(userPurchaseFound.userId).toBe(1);
+            expect(userPurchaseFound.albumId).toBe(4);
+            expect(res.status).toBe(200);
+            expect(res.body.albumId).toBe(4);
+            expect(res.body.user).toBe(userData.email);
             done();
           });
         });
@@ -67,13 +60,6 @@ describe('/POST /albums/:id - user purchases an album', () => {
               expect(response.status).toBe(409);
               expect(response.body.internal_code).toBe('conflict_error');
               done();
-            })
-            .catch(() => {
-              userService.buyAlbum(userData, 4).then(purchase => {
-                expect(purchase.email).toBe(userData.email);
-                expect(purchase.albumId).toBe(4);
-                done();
-              });
             });
         });
     });
@@ -88,13 +74,6 @@ describe('/POST /albums/:id - user purchases an album', () => {
         expect(res.body.message).toBe('invalid token');
         expect(res.body.internal_code).toBe('bad_request_error');
         done();
-      })
-      .catch(() => {
-        userService.buyAlbum(userData, 4).then(purchase => {
-          expect(purchase.email).toBe(userData.email);
-          expect(purchase.albumId).toBe(4);
-          done();
-        });
       });
   });
 });
