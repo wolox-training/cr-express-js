@@ -99,7 +99,7 @@ exports.updateOrCreateAdmin = user =>
       throw databaseError(error);
     });
 
-exports.findAlbums = keyValues =>
+exports.findBoughtAlbums = keyValues =>
   userAlbumModel.findAll({ where: keyValues }).catch(error => {
     throw databaseError(error);
   });

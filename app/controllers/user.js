@@ -5,7 +5,6 @@ const userService = require('../services/user');
 const { ascOrder } = require('../constants');
 const { defaultOrderBy } = require('../constants');
 const authService = require('../services/authentication');
-const { admin_role } = require('../constants').admin_role;
 const albumService = require('../services/album');
 
 const createUserObject = req => ({
@@ -79,21 +78,21 @@ exports.buyAlbum = (req, res, next) => {
 };
 
 exports.listAlbumsUserOrUsers = (req, res, next) => {
-  const user = authService.decodeToken(req.headers.authorization);
-  let keyValue = {};
-  if (user.role === admin_role) {
-    keyValue = { user_id: req.params.user_id };
-  }
+  const keyValue = { userId: req.params.user_id };
+
+  const getAlbums = userAlbums => {
+    const albumsData = [];
+    for (const userAlbum of userAlbums) {
+      albumsData.push(albumService.getAlbumById(userAlbum.albumId));
+    }
+    return Promise.all(albumsData);
+  };
   return userService
-    .findAlbums(keyValue)
-    .then(userAlbums => {
-      const albums = [];
-      userAlbums.forEach(userAlbum => {
-        albumService.getAlbumById(userAlbum.albumId).then(album => {
-          albums.push(album);
-        });
+    .findBoughtAlbums(keyValue)
+    .then(boughtAlbums => {
+      getAlbums(boughtAlbums).then(albumsData => {
+        res.send({ albumsData });
       });
-      res.send(albums);
     })
     .catch(next);
 };

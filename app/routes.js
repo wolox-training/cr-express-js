@@ -48,7 +48,7 @@ exports.init = app => {
   );
   app.get(
     '/users/:user_id/albums',
-    [authenticationMiddleware.verifyToken],
+    [authenticationMiddleware.verifyToken, userMiddleware.checkBoughtAlbumsPermission],
     userController.listAlbumsUserOrUsers
   );
 };
