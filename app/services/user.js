@@ -98,3 +98,8 @@ exports.updateOrCreateAdmin = user =>
       logger.info(error);
       throw databaseError(error);
     });
+
+exports.findAlbums = keyValues =>
+  userAlbumModel.findAll({ where: keyValues }).catch(error => {
+    throw databaseError(error);
+  });
