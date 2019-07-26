@@ -3,9 +3,8 @@ const { check } = require('express-validator/check');
 const { badRequestError } = require('../errors');
 const { unauthorizedError } = require('../errors');
 const { admin_role } = require('../constants');
-const session = require('.././session');
 
-exports.verifyTokenFormat = () => [
+exports.verifyTokenFormat = [
   check('Authorization', 'invalid token')
     .not()
     .isEmpty()
@@ -19,10 +18,7 @@ exports.verifyToken = (req, res, next) => {
   const token = req.headers.authorization;
   if (token) {
     try {
-      const user = authService.decodeToken(token);
-      if (user && user.role === admin_role) {
-        session.setAdmin();
-      }
+      req.userPayload = authService.decodeToken(token);
       return next();
     } catch {
       return next(badRequestError('invalid token'));
@@ -32,10 +28,8 @@ exports.verifyToken = (req, res, next) => {
 };
 
 exports.verifyAdminRole = (req, res, next) => {
-  if (session.isAdmin()) {
-    session.setDefault();
+  if (req.userPayload.role === admin_role) {
     return next();
   }
-  session.setDefault();
   return next(unauthorizedError('not allowed'));
 };
