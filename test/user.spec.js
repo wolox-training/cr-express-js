@@ -15,7 +15,8 @@ const createUserModel = user =>
     email: user.email,
     name: user.name,
     lastName: user.lastName,
-    password: user.password
+    password: user.password,
+    role: user.role || 'regular'
   });
 
 const userData = {
@@ -85,6 +86,7 @@ describe('POST /signup - create users', () => {
     });
   });
 });
+
 describe('POST /users/sessions  - signIn user', () => {
   it('should success with the generated token', done => {
     const signInDataToEndpoint = {
@@ -156,7 +158,6 @@ describe('POST /users/sessions  - signIn user', () => {
 });
 
 describe('GET /users - list of users', () => {
-  const token = authenticationService.generateToken(userData);
   const anotherUser = {
     email: 'kevin@wolox.com.ar',
     name: 'kevin',
@@ -173,7 +174,8 @@ describe('GET /users - list of users', () => {
     arr.every((value, index) => !index || compare(order, value[orderBy], arr[index - 1][orderBy]));
 
   it('should success with default params', done => {
-    createUserModel(userData).then(() => {
+    createUserModel(userData).then(createdUser => {
+      const token = authenticationService.generateToken(createdUser);
       createUserModel(anotherUser).then(() => {
         request(app)
           .get('/users')
@@ -191,7 +193,8 @@ describe('GET /users - list of users', () => {
 
   it('should success with specified params', done => {
     createUserModel(userData).then(() => {
-      createUserModel(anotherUser).then(() => {
+      createUserModel(anotherUser).then(createdUser => {
+        const token = authenticationService.generateToken(createdUser);
         request(app)
           .get('/users?limit=20&page=1&orderBy=name&order=desc')
           .set('Authorization', `Bearer ${token}`)
@@ -224,16 +227,17 @@ describe('POST /admin/users - signup admin users or update the user role to admi
     email: 'jorge@wolox.com.ar',
     name: 'jorge',
     lastName: 'perez',
-    password: 'hola123456',
+    password: 'asd12',
     role: 'admin'
   };
-  const token = authenticationService.generateToken(adminUser);
-
   const createUserAdmin = user =>
-    request(app)
-      .post('/admin/users')
-      .set('Authorization', `Bearer ${token}`)
-      .send(user);
+    createUserModel(adminUser).then(createdUser => {
+      const token = authenticationService.generateToken(createdUser);
+      return request(app)
+        .post('/admin/users')
+        .set('Authorization', `Bearer ${token}`)
+        .send(user);
+    });
 
   it('should success creating an user wich role is admin', done => {
     createUserAdmin(userDataToEndpoint).then(res => {
@@ -272,26 +276,6 @@ describe('POST /admin/users - signup admin users or update the user role to admi
           expect(res.body.message).toBe('not allowed');
           expect(res.body.internal_code).toBe('unauthorized_error');
           expect(res.status).toBe(401);
-          done();
-        });
-    });
-  });
-});
-
-describe('POST /users/sessions/invalidate_all - invalidate all the user sessions', () => {
-  const compareDates = (newDate, oldDate) => newDate > oldDate;
-  it('should succes with updated user base token date', done => {
-    createUserModel(userData).then(createdUser => {
-      const tokenRegularUser = authenticationService.generateToken(createdUser);
-      request(app)
-        .post('/users/sessions/invalidate_all')
-        .set('Authorization', `Bearer ${tokenRegularUser}`)
-        .send(userDataToEndpoint)
-        .then(updatedUser => {
-          expect(updatedUser.status).toBe(201);
-          expect(compareDates(updatedUser.body.baseAllowedDateToken, createdUser.baseAllowedDateToken)).toBe(
-            true
-          );
           done();
         });
     });
