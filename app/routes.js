@@ -64,7 +64,11 @@ exports.init = app => {
   );
   app.get(
     'users/albums/:id/photos',
-    [authenticationMiddleware.verifyToken],
+    [
+      authenticationMiddleware.verifyTokenFormat,
+      validatorErrorMiddleware.validateError,
+      authenticationMiddleware.verifyToken
+    ],
     userController.listPhotosAlbumsBought
   );
 };
