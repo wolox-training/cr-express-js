@@ -93,3 +93,11 @@ exports.listAlbumsUserOrUsers = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.listPhotosAlbumsBought = (req, res, next) =>
+  albumService
+    .getPhotosAlbum(req.params.id)
+    .then(photosAlbum => {
+      res.send(photosAlbum);
+    })
+    .catch(next);
