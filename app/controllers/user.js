@@ -103,6 +103,6 @@ exports.listPhotosAlbumsBought = (req, res, next) =>
           res.send({ photosAlbum });
         });
       }
-      throw badRequestError('invalid request');
+      throw badRequestError('invalid albumId');
     })
     .catch(next);
