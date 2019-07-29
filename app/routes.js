@@ -33,10 +33,11 @@ exports.init = app => {
   app.post(
     '/admin/users',
     [
-      authenticationMiddleware.verifyToken,
-      authenticationMiddleware.verifyAdminRole,
+      authenticationMiddleware.verifyTokenFormat,
       userMiddleware.validateSignup,
-      validatorErrorMiddleware.validateError
+      validatorErrorMiddleware.validateError,
+      authenticationMiddleware.verifyToken,
+      authenticationMiddleware.verifyAdminRole
     ],
     userController.registerAdmin
   );
