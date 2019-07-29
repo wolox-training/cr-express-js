@@ -150,3 +150,37 @@ describe('GET /users/:user_id/albums - list of bought albums', () => {
     });
   });
 });
+
+describe('GET /users/albums/:id/photos - list of photos of bought album', () => {
+  it('should success with list of photos of an album bought by an user', done => {
+    createUserModel(regularUser).then(regularUserCreated => {
+      const token = authenticationService.generateToken(regularUserCreated);
+      buyAlbum(regularUserCreated.id, 1).then(() => {
+        request(app)
+          .get('/users/albums/1/photos')
+          .set('Authorization', `Bearer ${token}`)
+          .then(response => {
+            expect(response.status).toBe(200);
+            expect(response.body.photosAlbum[0].albumId).toBe(1);
+            expect(response.body.photosAlbum[0].url).toBe('https://via.placeholder.com/600/92c952');
+            done();
+          });
+      });
+    });
+  });
+
+  it('should fail for invalid album id', done => {
+    createUserModel(regularUser).then(regularUserCreated => {
+      const token = authenticationService.generateToken(regularUserCreated);
+      request(app)
+        .get('/users/albums/1/photos')
+        .set('Authorization', `Bearer ${token}`)
+        .then(response => {
+          expect(response.status).toBe(400);
+          expect(response.body.message).toBe('invalid userId');
+          expect(response.body.internal_code).toBe('bad_request_error');
+          done();
+        });
+    });
+  });
+});

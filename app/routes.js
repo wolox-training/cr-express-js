@@ -63,7 +63,7 @@ exports.init = app => {
     userController.listAlbumsUserOrUsers
   );
   app.get(
-    'users/albums/:id/photos',
+    '/users/albums/:id/photos',
     [
       authenticationMiddleware.verifyTokenFormat,
       validatorErrorMiddleware.validateError,

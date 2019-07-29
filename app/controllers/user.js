@@ -95,9 +95,14 @@ exports.listAlbumsUserOrUsers = (req, res, next) => {
 };
 
 exports.listPhotosAlbumsBought = (req, res, next) =>
-  albumService
-    .getPhotosAlbum(req.params.id)
-    .then(photosAlbum => {
-      res.send(photosAlbum);
+  userService
+    .findBoughtAlbums({ albumId: req.params.id })
+    .then(albums => {
+      if (albums.length !== 0) {
+        return albumService.getPhotosAlbum(req.params.id).then(photosAlbum => {
+          res.send({ photosAlbum });
+        });
+      }
+      throw badRequestError('invalid request');
     })
     .catch(next);
