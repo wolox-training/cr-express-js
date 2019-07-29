@@ -161,7 +161,7 @@ describe('GET /users/albums/:id/photos - list of photos of bought album', () => 
           .set('Authorization', `Bearer ${token}`)
           .then(response => {
             expect(response.status).toBe(200);
-            expect(response.body.photosAlbum[0].albumId).toBe(1);
+            expect(response.body.photosAlbum[0].albumId).toBe('1');
             expect(response.body.photosAlbum[0].url).toBe('https://via.placeholder.com/600/92c952');
             done();
           });
@@ -177,7 +177,7 @@ describe('GET /users/albums/:id/photos - list of photos of bought album', () => 
         .set('Authorization', `Bearer ${token}`)
         .then(response => {
           expect(response.status).toBe(400);
-          expect(response.body.message).toBe('invalid userId');
+          expect(response.body.message).toBe('invalid albumId');
           expect(response.body.internal_code).toBe('bad_request_error');
           done();
         });
