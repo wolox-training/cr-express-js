@@ -44,7 +44,12 @@ exports.init = app => {
   );
   app.post(
     '/albums/:id',
-    [authenticationMiddleware.verifyToken, albumMiddleware.verifyAlbumId],
+    [
+      authenticationMiddleware.verifyTokenFormat,
+      validatorErrorMiddleware.validateError,
+      authenticationMiddleware.verifyToken,
+      albumMiddleware.verifyAlbumId
+    ],
     userController.buyAlbum
   );
 };
