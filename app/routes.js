@@ -54,7 +54,12 @@ exports.init = app => {
   );
   app.get(
     '/users/:user_id/albums',
-    [authenticationMiddleware.verifyToken, userMiddleware.checkBoughtAlbumsPermission],
+    [
+      authenticationMiddleware.verifyTokenFormat,
+      validatorErrorMiddleware.validateError,
+      authenticationMiddleware.verifyToken,
+      userMiddleware.checkBoughtAlbumsPermission
+    ],
     userController.listAlbumsUserOrUsers
   );
   app.get(
