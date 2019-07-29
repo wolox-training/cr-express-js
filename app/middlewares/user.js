@@ -23,7 +23,7 @@ exports.validateSignup = [
   body('lastName', 'lastName error')
     .not()
     .isEmpty(),
-  this.validateEmailPassword
+  exports.validateEmailPassword
 ];
 
 exports.checkOrder = [
