@@ -34,16 +34,22 @@ exports.init = app => {
   app.post(
     '/admin/users',
     [
-      authenticationMiddleware.verifyToken,
-      authenticationMiddleware.verifyAdminRole,
+      authenticationMiddleware.verifyTokenFormat,
       userMiddleware.validateSignup,
-      validatorErrorMiddleware.validateError
+      validatorErrorMiddleware.validateError,
+      authenticationMiddleware.verifyToken,
+      authenticationMiddleware.verifyAdminRole
     ],
     userController.registerAdmin
   );
   app.post(
     '/albums/:id',
-    [authenticationMiddleware.verifyToken, albumMiddleware.verifyAlbumId],
+    [
+      authenticationMiddleware.verifyTokenFormat,
+      validatorErrorMiddleware.validateError,
+      authenticationMiddleware.verifyToken,
+      albumMiddleware.verifyAlbumId
+    ],
     userController.buyAlbum
   );
   app.get(
