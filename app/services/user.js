@@ -53,12 +53,6 @@ exports.createUser = user =>
       throw databaseError(error);
     });
 
-exports.updateUserRole = user =>
-  user.save().catch(error => {
-    logger.info(error);
-    throw databaseError(error);
-  });
-
 exports.buyAlbum = (user, albumId) =>
   userAlbumModel
     .create({
@@ -96,6 +90,17 @@ exports.updateOrCreateAdmin = user =>
     })
     .catch(error => {
       logger.info(error);
+      throw databaseError(error);
+    });
+
+exports.setBaseTokenTime = userData =>
+  userModel
+    .update({ baseAllowedDateToken: Date.now() }, { where: { email: userData.email } })
+    .catch(error => {
+      logger.info(error);
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw conflictError('user has already bought this album!');
+      }
       throw databaseError(error);
     });
 

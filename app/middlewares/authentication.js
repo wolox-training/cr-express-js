@@ -3,6 +3,7 @@ const { check } = require('express-validator/check');
 const { badRequestError } = require('../errors');
 const { unauthorizedError } = require('../errors');
 const { admin_role } = require('../constants');
+const userService = require('../services/user');
 
 exports.verifyTokenFormat = [
   check('Authorization', 'invalid token')
@@ -19,7 +20,12 @@ exports.verifyToken = (req, res, next) => {
   if (token) {
     try {
       req.userPayload = authService.decodeToken(token);
-      return next();
+      return userService.findOne({ id: req.userPayload.id }).then(user => {
+        if (user.baseAllowedDateToken && req.userPayload.generatedDate > user.baseAllowedDateToken) {
+          return next();
+        }
+        return next(badRequestError('invalid token'));
+      });
     } catch {
       return next(badRequestError('invalid token'));
     }

@@ -71,4 +71,13 @@ exports.init = app => {
     ],
     userController.listPhotosAlbumsBought
   );
+  app.post(
+    '/users/sessions/invalidate_all',
+    [
+      authenticationMiddleware.verifyTokenFormat,
+      validatorErrorMiddleware.validateError,
+      authenticationMiddleware.verifyToken
+    ],
+    userController.invalidateSessions
+  );
 };

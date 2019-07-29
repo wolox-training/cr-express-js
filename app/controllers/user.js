@@ -106,3 +106,15 @@ exports.listPhotosAlbumsBought = (req, res, next) =>
       throw badRequestError('invalid request');
     })
     .catch(next);
+
+exports.invalidateSessions = (req, res, next) => {
+  const { userPayload } = req;
+  return userService
+    .setBaseTokenTime(userPayload)
+    .then(() =>
+      userService.findOne({ email: userPayload.email }).then(userUpdated => {
+        res.status(201).send(userUpdated);
+      })
+    )
+    .catch(next);
+};

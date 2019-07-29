@@ -277,3 +277,23 @@ describe('POST /admin/users - signup admin users or update the user role to admi
     });
   });
 });
+
+describe('POST /users/sessions/invalidate_all - invalidate all the user sessions', () => {
+  const compareDates = (newDate, oldDate) => newDate > oldDate;
+  it('should succes with updated user base token date', done => {
+    createUserModel(userData).then(createdUser => {
+      const tokenRegularUser = authenticationService.generateToken(createdUser);
+      request(app)
+        .post('/users/sessions/invalidate_all')
+        .set('Authorization', `Bearer ${tokenRegularUser}`)
+        .send(userDataToEndpoint)
+        .then(updatedUser => {
+          expect(updatedUser.status).toBe(201);
+          expect(compareDates(updatedUser.body.baseAllowedDateToken, createdUser.baseAllowedDateToken)).toBe(
+            true
+          );
+          done();
+        });
+    });
+  });
+});
