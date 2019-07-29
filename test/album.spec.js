@@ -10,7 +10,8 @@ const createUserModel = user =>
     email: user.email,
     name: user.name,
     lastName: user.lastName,
-    password: user.password
+    password: user.password,
+    role: user.role
   });
 
 const buyAlbum = (userId, albumId) => userAlbumModel.create({ userId, albumId });
@@ -96,9 +97,9 @@ describe('GET /users/:user_id/albums - list of bought albums', () => {
         request(app)
           .get('/users/1/albums')
           .set('Authorization', `Bearer ${token}`)
-          .then(res => {
-            expect(res.status).toBe(200);
-            expect(res.body.albumsData[0].id).toBe(purchasedAlbum.albumId);
+          .then(albumsUserList => {
+            expect(albumsUserList.status).toBe(200);
+            expect(albumsUserList.body.albumsData[0].id).toBe(purchasedAlbum.albumId);
             done();
           });
       });
@@ -113,9 +114,35 @@ describe('GET /users/:user_id/albums - list of bought albums', () => {
           request(app)
             .get('/users/2/albums')
             .set('Authorization', `Bearer ${token}`)
-            .then(res => {
-              expect(res.status).toBe(200);
-              expect(res.body.albumsData[0].id).toBe(purchasedAlbum.albumId);
+            .then(albumsUserList => {
+              expect(albumsUserList.status).toBe(200);
+              expect(albumsUserList.body.albumsData[0].id).toBe(purchasedAlbum.albumId);
+              done();
+            });
+        });
+      });
+    });
+  });
+
+  it('should fail for invalid permissions', done => {
+    const anotherRegularUser = {
+      email: 'carlos@wolox.com.ar',
+      name: 'carlos',
+      lastName: 'perez',
+      password: '$2a$10$4sUmMDqL/Ux1rqGIyxka5OljqC.pZHyIPxvVsMsV6wc7Ro1xBHwQC',
+      role: 'regular'
+    };
+    createUserModel(regularUser).then(regularUserCreated => {
+      const token = authenticationService.generateToken(regularUserCreated);
+      createUserModel(anotherRegularUser).then(anotherRegularUserCreated => {
+        buyAlbum(anotherRegularUserCreated.id, 2).then(() => {
+          request(app)
+            .get('/users/2/albums')
+            .set('Authorization', `Bearer ${token}`)
+            .then(response => {
+              expect(response.status).toBe(400);
+              expect(response.body.message).toBe('invalid userId');
+              expect(response.body.internal_code).toBe('bad_request_error');
               done();
             });
         });

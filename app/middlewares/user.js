@@ -2,7 +2,7 @@ const { body, check } = require('express-validator/check');
 const { ascOrder } = require('../constants');
 const { descOrder } = require('../constants');
 const { badRequestError } = require('../errors');
-const { default_role } = require('../constants');
+const { default_role, admin_role } = require('../constants');
 
 exports.validateEmailPassword = [
   body('email', 'email error')
@@ -39,6 +39,9 @@ exports.checkOrder = [
 
 exports.checkBoughtAlbumsPermission = (req, res, next) => {
   if (req.userPayload.role === default_role && req.userPayload.id === parseInt(req.params.user_id)) {
+    return next();
+  }
+  if (req.userPayload.role === admin_role) {
     return next();
   }
   return next(badRequestError('invalid userId'));
