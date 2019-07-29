@@ -175,7 +175,6 @@ describe('GET /users - list of users', () => {
 
   it('should success with default params', done => {
     createUserModel(userData).then(() => {
-      console.log('uno');
       createUserModel(anotherUser).then(() => {
         request(app)
           .get('/users')
