@@ -5,13 +5,15 @@ const userService = require('../services/user');
 const { ascOrder } = require('../constants');
 const { defaultOrderBy } = require('../constants');
 
+const createUserObject = req => ({
+  email: req.body.email,
+  name: req.body.name,
+  lastName: req.body.lastName,
+  password: encryptionService.encryptPassword(req.body.password)
+});
+
 exports.register = (req, res, next) => {
-  const user = {
-    email: req.body.email,
-    name: req.body.name,
-    lastName: req.body.lastName,
-    password: encryptionService.encryptPassword(req.body.password)
-  };
+  const user = createUserObject(req);
   return userService
     .createUser(user)
     .then(userCreated => {
@@ -20,12 +22,22 @@ exports.register = (req, res, next) => {
     .catch(next);
 };
 
+exports.registerAdmin = (req, res, next) => {
+  const user = createUserObject(req);
+  return userService
+    .updateOrCreateAdmin(user)
+    .then(savedUser => {
+      res.send(savedUser);
+    })
+    .catch(next);
+};
+
 exports.signIn = (req, res, next) =>
   userService
     .findOne({ email: req.body.email })
-    .then(user => {
-      if (user && encryptionService.validatePasssword(req.body.password, user.password)) {
-        const token = authenticationService.generateToken(user);
+    .then(userFound => {
+      if (userFound && encryptionService.validatePasssword(req.body.password, userFound.password)) {
+        const token = authenticationService.generateToken(userFound);
         res.setHeader('Authorization', `Bearer ${token}`);
         res.end();
       } else {
