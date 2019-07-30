@@ -60,7 +60,7 @@ exports.init = app => {
       authenticationMiddleware.verifyToken,
       userMiddleware.checkBoughtAlbumsPermission
     ],
-    userController.listAlbumsUserOrUsers
+    userController.listAlbumsUser
   );
   app.get(
     '/users/albums/:id/photos',
