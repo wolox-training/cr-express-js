@@ -2,7 +2,6 @@ const request = require('supertest');
 const app = require('.././app');
 const userModel = require('../app/models').user;
 const { expiry, expiry_type } = require('../config').common.session;
-jest.mock('../app/services/authentication');
 const authenticationService = require('../app/services/authentication');
 
 const createUserModel = user =>
@@ -98,27 +97,21 @@ describe('POST sign', () => {
   });
 
   it('should fail for expired token', done => {
-    createUserModel(userData).then(() => {
-      request(app)
-        .post('/users/sessions')
-        .send(signInDataToEndpoint)
-        .then(response => {
-          expect(response.status).toBe(200);
-          expect(response.header.authorization).toBeDefined();
-          expect(response.body.expiration_token).toBe(`${expiry} ${expiry_type}`);
-          setTimeout(() => {
-            request(app)
-              .post('/users/sessions/invalidate_all')
-              .set('Authorization', `Bearer ${response.header.authorization.split(' ')[1]}`)
-              .send()
-              .then(res => {
-                expect(res.status).toBe(400);
-                expect(res.body.message).toBe('invalid token');
-                expect(res.body.internal_code).toBe('bad_request_error');
-                done();
-              });
-          }, 3000);
-        });
-    });
+    const token =
+      'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9\
+    .eyJlbWFpbCI6InBlZHJvQHdvbG94LmNvbS5hciIsIm5hbWUiOiJwZWRybyIsImxhc3ROYW1lIj\
+    oicm9kcmlndWV6IiwiaWQiOjEsInJvbGUiOiJyZWd1bGFyIiwiZ2VuZXJhdGVkRGF0ZSI6MTU2ND\
+    UwMjE4MTM3OSwiZXhwIjoxNTY0NTAyMTkxMzc5fQ\
+    .GDG02Hc0baqTcrWKpaxaLBgas0zaKau50I4Q23UUBoc';
+    request(app)
+      .post('/users/sessions/invalidate_all')
+      .set('Authorization', token)
+      .send()
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe('invalid token');
+        expect(res.body.internal_code).toBe('bad_request_error');
+        done();
+      });
   });
 });
