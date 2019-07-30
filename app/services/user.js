@@ -53,12 +53,6 @@ exports.createUser = user =>
       throw databaseError(error);
     });
 
-exports.updateUserRole = user =>
-  user.save().catch(error => {
-    logger.info(error);
-    throw databaseError(error);
-  });
-
 exports.buyAlbum = (user, albumId) =>
   userAlbumModel
     .create({
