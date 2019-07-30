@@ -74,7 +74,7 @@ exports.buyAlbum = (req, res, next) =>
     })
     .catch(next);
 
-exports.listAlbumsUserOrUsers = (req, res, next) => {
+exports.listAlbumsUser = (req, res, next) => {
   const keyValue = { userId: req.params.user_id };
 
   const getAlbums = userAlbums => {
