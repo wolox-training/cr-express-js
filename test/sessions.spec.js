@@ -1,7 +1,9 @@
 const request = require('supertest');
 const app = require('.././app');
 const userModel = require('../app/models').user;
-const authenticationService = require('./../app/services/authentication');
+const { expiry, expiry_type } = require('../config').common.session;
+jest.mock('../app/services/authentication');
+const authenticationService = require('../app/services/authentication');
 
 const createUserModel = user =>
   userModel.create({
@@ -61,6 +63,61 @@ describe('POST /users/sessions/invalidate_all - invalidate all the user sessions
               expect(res.body.internal_code).toBe('bad_request_error');
               done();
             });
+        });
+    });
+  });
+});
+
+describe('POST sign', () => {
+  const signInDataToEndpoint = {
+    email: 'jose@wolox.com.ar',
+    password: 'asdasdasd4566'
+  };
+
+  it('should success with the generated token', done => {
+    createUserModel(userData).then(() => {
+      request(app)
+        .post('/users/sessions')
+        .send(signInDataToEndpoint)
+        .then(response => {
+          expect(response.status).toBe(200);
+          expect(response.header.authorization).toBeDefined();
+          expect(response.body.expiration_token).toBe(`${expiry} ${expiry_type}`);
+          setTimeout(() => {
+            request(app)
+              .post('/users/sessions/invalidate_all')
+              .set('Authorization', `Bearer ${response.header.authorization.split(' ')[1]}`)
+              .send()
+              .then(res => {
+                expect(res.status).toBe(201);
+                done();
+              });
+          }, 500);
+        });
+    });
+  });
+
+  it('should fail for expired token', done => {
+    createUserModel(userData).then(() => {
+      request(app)
+        .post('/users/sessions')
+        .send(signInDataToEndpoint)
+        .then(response => {
+          expect(response.status).toBe(200);
+          expect(response.header.authorization).toBeDefined();
+          expect(response.body.expiration_token).toBe(`${expiry} ${expiry_type}`);
+          setTimeout(() => {
+            request(app)
+              .post('/users/sessions/invalidate_all')
+              .set('Authorization', `Bearer ${response.header.authorization.split(' ')[1]}`)
+              .send()
+              .then(res => {
+                expect(res.status).toBe(400);
+                expect(res.body.message).toBe('invalid token');
+                expect(res.body.internal_code).toBe('bad_request_error');
+                done();
+              });
+          }, 3000);
         });
     });
   });

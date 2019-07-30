@@ -1,6 +1,7 @@
 const jwt = require('jwt-simple');
 const moment = require('moment');
-const { secret, expiry, expiry_type } = require('../../config').common.session;
+const { secret } = require('../../../config').common.session;
+const logger = require('../../logger');
 
 exports.generateToken = user => {
   const tokenPayload = {
@@ -11,15 +12,9 @@ exports.generateToken = user => {
     role: user.role,
     generatedDate: Date.now(),
     exp: moment()
-      .add(expiry, expiry_type)
+      .add(1, 'seconds')
       .valueOf()
   };
+  logger.info('holaaaa');
   return jwt.encode(tokenPayload, secret);
-};
-
-const formatToken = token => token.split(' ')[1];
-
-exports.decodeToken = token => {
-  const formatedToken = formatToken(token);
-  return jwt.decode(formatedToken, secret);
 };

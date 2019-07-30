@@ -5,6 +5,7 @@ const userService = require('../services/user');
 const { ascOrder } = require('../constants');
 const { defaultOrderBy } = require('../constants');
 const albumService = require('../services/album');
+const { expiry, expiry_type } = require('../../config').common.session;
 
 const createUserObject = req => ({
   email: req.body.email,
@@ -40,6 +41,7 @@ exports.signIn = (req, res, next) =>
       if (userFound && encryptionService.validatePasssword(req.body.password, userFound.password)) {
         const token = authenticationService.generateToken(userFound);
         res.setHeader('Authorization', `Bearer ${token}`);
+        res.send({ expiration_token: `${expiry} ${expiry_type}` });
         res.end();
       } else {
         throw badRequestError('sign in error');

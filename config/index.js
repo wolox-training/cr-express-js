@@ -40,7 +40,9 @@ const config = {
     },
     session: {
       header_name: 'authorization',
-      secret: process.env.NODE_API_SESSION_SECRET
+      secret: process.env.NODE_API_SESSION_SECRET,
+      expiry: process.env.NODE_API_SESSION_EXPIRY,
+      expiry_type: process.env.NODE_API_SSESSIONS_EXPIRY_TYPE
     }
   },
   api_services: {
