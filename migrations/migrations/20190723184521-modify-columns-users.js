@@ -7,7 +7,7 @@ module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface.addColumn('users', 'role', {
       type: Sequelize.ENUM([default_role, admin_role]),
-      allowNUll: false,
+      allowNull: false,
       defaultValue: default_role
     }),
   down: queryInterface =>
