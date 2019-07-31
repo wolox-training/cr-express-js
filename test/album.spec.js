@@ -5,6 +5,24 @@ const userAlbumModel = require('../app/models').user_album;
 const authenticationService = require('../app/services/authentication');
 const methods = require('../app/services/album');
 methods.getAlbumById = jest.fn(id => Promise.resolve({ title: 'The title', id }));
+methods.getPhotosAlbums = jest.fn(id =>
+  Promise.resolve([
+    {
+      albumId: id,
+      id: 1,
+      title: 'accusamus beatae ad facilis cum similique qui sunt',
+      url: 'https://via.placeholder.com/600/92c952',
+      thumbnailUrl: 'https://via.placeholder.com/150/92c952'
+    },
+    {
+      albumId: id,
+      id: 2,
+      title: 'reprehenderit est deserunt velit ipsam',
+      url: 'https://via.placeholder.com/600/771796',
+      thumbnailUrl: 'https://via.placeholder.com/150/771796'
+    }
+  ])
+);
 
 const createUserModel = user =>
   userModel.create({
@@ -150,7 +168,7 @@ describe('GET /users/albums/:id/photos - list of photos of bought album', () => 
           .set('Authorization', `Bearer ${token}`)
           .then(response => {
             expect(response.status).toBe(200);
-            expect(response.body.photosAlbum[0].albumId).toBe('1');
+            expect(response.body.photosAlbum[0].albumId).toBe(1);
             expect(response.body.photosAlbum[0].url).toBe('https://via.placeholder.com/600/92c952');
             done();
           });
