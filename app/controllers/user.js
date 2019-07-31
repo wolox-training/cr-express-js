@@ -102,10 +102,6 @@ exports.invalidateSessions = (req, res, next) => {
   const { userPayload } = req;
   return userService
     .setBaseTokenTime(userPayload)
-    .then(() =>
-      userService.findOne({ email: userPayload.email }).then(userUpdated => {
-        res.status(200).send(userUpdated);
-      })
-    )
+    .then(() => res.status(200).send({ message: 'Old user logged sessions invalidated' }))
     .catch(next);
 };

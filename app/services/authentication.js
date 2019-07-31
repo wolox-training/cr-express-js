@@ -8,7 +8,7 @@ exports.generateToken = user => {
     lastName: user.lastName,
     id: user.id,
     role: user.role,
-    generatedDate: Date.now()
+    iat: Date.now()
   };
   return jwt.encode(tokenPayload, secret);
 };
