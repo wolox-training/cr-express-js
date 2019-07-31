@@ -6,6 +6,7 @@ const { ascOrder } = require('../constants');
 const { defaultOrderBy } = require('../constants');
 const albumService = require('../services/album');
 const { expiry, expiry_type } = require('../../config').common.session;
+const emailService = require('../services/email');
 
 const createUserObject = req => ({
   email: req.body.email,
@@ -113,4 +114,10 @@ exports.invalidateSessions = (req, res, next) => {
       })
     )
     .catch(next);
+};
+
+exports.prueba = (req, res) => {
+  emailService.sendEmail().then(info => {
+    res.send(info);
+  });
 };

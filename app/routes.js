@@ -80,4 +80,5 @@ exports.init = app => {
     ],
     userController.invalidateSessions
   );
+  app.get('/prueba', userController.prueba);
 };

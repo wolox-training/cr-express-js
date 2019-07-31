@@ -50,6 +50,16 @@ const config = {
   },
   encryption: {
     salt_sync: process.env.BCRYPT_SALT
+  },
+  email: {
+    email_config: {
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    }
   }
 };
 
