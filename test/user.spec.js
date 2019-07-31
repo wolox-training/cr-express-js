@@ -85,7 +85,6 @@ describe('POST /signup - create users', () => {
     });
   });
 });
-
 describe('POST /users/sessions  - signIn user', () => {
   it('should success with the generated token', done => {
     const signInDataToEndpoint = {
@@ -229,6 +228,7 @@ describe('POST /admin/users - signup admin users or update the user role to admi
     role: 'admin'
   };
   const token = authenticationService.generateToken(adminUser);
+
   const createUserAdmin = user =>
     request(app)
       .post('/admin/users')

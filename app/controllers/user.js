@@ -64,3 +64,11 @@ exports.getAllUsers = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.buyAlbum = (req, res, next) =>
+  userService
+    .buyAlbum(req.userPayload, req.params.albumId)
+    .then(purchase => {
+      res.status(201).send({ user: req.userPayload.email, albumId: purchase.albumId });
+    })
+    .catch(next);

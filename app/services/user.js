@@ -1,5 +1,6 @@
 const { conflictError, databaseError } = require('../errors');
 const userModel = require('../models').user;
+const userAlbumModel = require('../models').user_album;
 const logger = require('.././logger');
 const { admin_role } = require('../constants');
 
@@ -48,6 +49,24 @@ exports.createUser = user =>
       logger.info(error);
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw conflictError('user already exists!');
+      }
+      throw databaseError(error);
+    });
+
+exports.buyAlbum = (user, albumId) =>
+  userAlbumModel
+    .create({
+      userId: user.id,
+      albumId
+    })
+    .then(purchase => {
+      logger.info(`album ${purchase.albumId} bought by userid ${purchase.userId}`);
+      return purchase;
+    })
+    .catch(error => {
+      logger.info(error);
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw conflictError('user has already bought this album!');
       }
       throw databaseError(error);
     });
