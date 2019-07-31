@@ -228,7 +228,6 @@ describe('POST /admin/users - signup admin users or update the user role to admi
     role: 'admin'
   };
   const token = authenticationService.generateToken(adminUser);
-
   const createUserAdmin = user =>
     request(app)
       .post('/admin/users')
