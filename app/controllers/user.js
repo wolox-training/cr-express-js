@@ -77,17 +77,11 @@ exports.buyAlbum = (req, res, next) =>
 exports.listAlbumsUser = (req, res, next) => {
   const keyValue = { userId: req.params.user_id };
 
-  const getAlbums = userAlbums => {
-    const albumsData = [];
-    for (const userAlbum of userAlbums) {
-      albumsData.push(albumService.getAlbumById(userAlbum.albumId));
-    }
-    return Promise.all(albumsData);
-  };
   return userService
     .findBoughtAlbums(keyValue)
     .then(boughtAlbums => {
-      getAlbums(boughtAlbums).then(albumsData => {
+      const albums = boughtAlbums.map(album => albumService.getAlbumById(album.albumId));
+      return Promise.all(albums).then(albumsData => {
         res.send({ albumsData });
       });
     })
