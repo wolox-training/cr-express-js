@@ -13,6 +13,13 @@ const createUserObject = req => ({
   password: encryptionService.encryptPassword(req.body.password)
 });
 
+const createUserObject = req => ({
+  email: req.body.email,
+  name: req.body.name,
+  lastName: req.body.lastName,
+  password: encryptionService.encryptPassword(req.body.password)
+});
+
 exports.register = (req, res, next) => {
   const user = createUserObject(req);
   return userService
