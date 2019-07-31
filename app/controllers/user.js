@@ -81,8 +81,8 @@ exports.listAlbumsUser = (req, res, next) => {
     .findBoughtAlbums(keyValue)
     .then(boughtAlbums => {
       const albums = boughtAlbums.map(album => albumService.getAlbumById(album.albumId));
-      Promise.all(albums).then(nose => {
-        res.send(nose);
+      return Promise.all(albums).then(albumsData => {
+        res.send({ albumsData });
       });
     })
     .catch(next);
