@@ -53,7 +53,7 @@ exports.init = app => {
     userController.buyAlbum
   );
   app.get(
-    '/users/:user_id/albums',
+    '/users/:userId/albums',
     [
       authenticationMiddleware.verifyTokenFormat,
       validatorErrorMiddleware.validateError,
