@@ -3,9 +3,9 @@ const app = require('../app');
 const userModel = require('../app/models').user;
 const userAlbumModel = require('../app/models').user_album;
 const authenticationService = require('../app/services/authentication');
-const methods = require('../app/services/album');
-methods.getAlbumById = jest.fn(id => Promise.resolve({ title: 'The title', id }));
-methods.getPhotosAlbums = jest.fn(id =>
+const albumService = require('../app/services/album');
+albumService.getAlbumById = jest.fn(id => Promise.resolve({ title: 'The title', id }));
+albumService.getPhotosAlbums = jest.fn(id =>
   Promise.resolve([
     {
       albumId: id,
