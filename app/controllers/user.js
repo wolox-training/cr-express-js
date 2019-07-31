@@ -104,7 +104,7 @@ exports.invalidateSessions = (req, res, next) => {
     .setBaseTokenTime(userPayload)
     .then(() =>
       userService.findOne({ email: userPayload.email }).then(userUpdated => {
-        res.status(201).send(userUpdated);
+        res.status(200).send(userUpdated);
       })
     )
     .catch(next);

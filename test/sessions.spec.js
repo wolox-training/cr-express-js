@@ -22,7 +22,7 @@ const userData = {
 describe('POST /users/sessions/invalidate_all - invalidate all the user sessions', () => {
   const compareDates = (newDate, oldDate) => new Date(newDate) - new Date(oldDate) >= 0;
 
-  it('should succes with updated user base token date', done => {
+  it('should success with updated user base token date', done => {
     createUserModel(userData).then(createdUser => {
       const tokenRegularUser = authenticationService.generateToken(createdUser);
       request(app)
@@ -30,7 +30,7 @@ describe('POST /users/sessions/invalidate_all - invalidate all the user sessions
         .set('Authorization', `Bearer ${tokenRegularUser}`)
         .send()
         .then(updatedUser => {
-          expect(updatedUser.status).toBe(201);
+          expect(updatedUser.status).toBe(200);
           expect(compareDates(updatedUser.body.baseAllowedDateToken, createdUser.baseAllowedDateToken)).toBe(
             true
           );
@@ -47,7 +47,7 @@ describe('POST /users/sessions/invalidate_all - invalidate all the user sessions
         .set('Authorization', `Bearer ${tokenRegularUser}`)
         .send()
         .then(updatedUser => {
-          expect(updatedUser.status).toBe(201);
+          expect(updatedUser.status).toBe(200);
           expect(compareDates(updatedUser.body.baseAllowedDateToken, createdUser.baseAllowedDateToken)).toBe(
             true
           );
