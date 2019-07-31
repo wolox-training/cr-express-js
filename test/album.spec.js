@@ -183,9 +183,9 @@ describe('GET /users/albums/:id/photos - list of photos of bought album', () => 
         .get('/users/albums/1/photos')
         .set('Authorization', `Bearer ${token}`)
         .then(response => {
-          expect(response.status).toBe(400);
-          expect(response.body.message).toBe('invalid albumId');
-          expect(response.body.internal_code).toBe('bad_request_error');
+          expect(response.status).toBe(404);
+          expect(response.body.message).toBe('album id not found');
+          expect(response.body.internal_code).toBe('not_found_error');
           done();
         });
     });
