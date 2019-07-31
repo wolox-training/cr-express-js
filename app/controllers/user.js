@@ -68,9 +68,9 @@ exports.getAllUsers = (req, res, next) => {
 
 exports.buyAlbum = (req, res, next) =>
   userService
-    .buyAlbum(req.userPayload, req.params.id)
+    .buyAlbum(req.userPayload, req.params.albumId)
     .then(purchase => {
-      res.send({ user: req.userPayload.email, albumId: purchase.albumId });
+      res.status(201).send({ user: req.userPayload.email, albumId: purchase.albumId });
     })
     .catch(next);
 
