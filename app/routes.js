@@ -43,7 +43,7 @@ exports.init = app => {
     userController.registerAdmin
   );
   app.post(
-    '/albums/:id',
+    '/albums/:albumId',
     [
       authenticationMiddleware.verifyTokenFormat,
       validatorErrorMiddleware.validateError,
