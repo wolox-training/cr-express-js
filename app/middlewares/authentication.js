@@ -21,11 +21,7 @@ exports.verifyToken = (req, res, next) => {
     try {
       req.userPayload = authService.decodeToken(token);
       return userService.findOne({ id: req.userPayload.id }).then(user => {
-        if (
-          user &&
-          req.userPayload.generatedDate > user.baseAllowedDateToken &&
-          req.userPayload.exp > Date.now()
-        ) {
+        if (user && req.userPayload.iat > user.baseAllowedDateToken && req.userPayload.exp > Date.now()) {
           return next();
         }
         return next(badRequestError('invalid token'));

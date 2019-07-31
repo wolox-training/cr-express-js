@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) =>
       },
       baseAllowedDateToken: {
         type: DataTypes.DATE,
-        defaultValue: Date.now(),
+        defaultValue: DataTypes.NOW,
         allowNull: false,
         field: 'base_allowed_date_token'
       }

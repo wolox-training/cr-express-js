@@ -13,7 +13,7 @@ module.exports = {
       }),
       queryInterface.addColumn('users', 'base_allowed_date_token', {
         type: Sequelize.DATE,
-        defaultValue: Date.now(),
+        defaultValue: Sequelize.NOW,
         allowNull: false
       })
     ]),
