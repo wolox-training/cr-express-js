@@ -89,8 +89,8 @@ describe('/POST /albums/:id - user purchases an album', () => {
   });
 });
 
-describe('GET /users/:user_id/albums - list of bought albums', () => {
-  it('should success with the list of albums bought by an user', done => {
+describe('GET /users/:userId/albums - list of bought albums', () => {
+  it('should success with the albums bought by the logged regular user', done => {
     createUserModel(regularUser).then(createdUser => {
       const token = authenticationService.generateToken(createdUser);
       buyAlbum(createdUser.id, 2).then(purchasedAlbum => {
@@ -106,7 +106,7 @@ describe('GET /users/:user_id/albums - list of bought albums', () => {
     });
   });
 
-  it('should success with the list of albums bought by all the users', done => {
+  it('should success with the albums bought by an user consulted by an adminUser', done => {
     createUserModel(adminUser).then(adminUserCreated => {
       const token = authenticationService.generateToken(adminUserCreated);
       createUserModel(regularUser).then(regularUserCreated => {
@@ -124,7 +124,7 @@ describe('GET /users/:user_id/albums - list of bought albums', () => {
     });
   });
 
-  it('should fail for invalid permissions', done => {
+  it('should fail for not allowed role to access to another user data', done => {
     const anotherRegularUser = {
       email: 'carlos@wolox.com.ar',
       name: 'carlos',

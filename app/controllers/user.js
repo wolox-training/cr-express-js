@@ -76,11 +76,9 @@ exports.buyAlbum = (req, res, next) =>
     })
     .catch(next);
 
-exports.listAlbumsUser = (req, res, next) => {
-  const keyValue = { userId: req.params.user_id };
-
-  return userService
-    .findBoughtAlbums(keyValue)
+exports.listAlbumsUser = (req, res, next) =>
+  userService
+    .findBoughtAlbums({ userId: req.params.userId })
     .then(boughtAlbums => {
       const albums = boughtAlbums.map(album => albumService.getAlbumById(album.albumId));
       return Promise.all(albums).then(albumsData => {
@@ -88,7 +86,6 @@ exports.listAlbumsUser = (req, res, next) => {
       });
     })
     .catch(next);
-};
 
 exports.listPhotosAlbumsBought = (req, res, next) =>
   userService

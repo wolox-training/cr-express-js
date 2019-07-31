@@ -1,3 +1,5 @@
+/* eslint-disable no-extra-parens*/
+
 const { body, check } = require('express-validator/check');
 const { ascOrder } = require('../constants');
 const { descOrder } = require('../constants');
@@ -38,10 +40,10 @@ exports.checkOrder = [
 ];
 
 exports.checkBoughtAlbumsPermission = (req, res, next) => {
-  if (req.userPayload.role === default_role && req.userPayload.id === parseInt(req.params.user_id)) {
-    return next();
-  }
-  if (req.userPayload.role === admin_role) {
+  if (
+    (req.userPayload.role === default_role && req.userPayload.id === parseInt(req.params.userId)) ||
+    req.userPayload.role === admin_role
+  ) {
     return next();
   }
   return next(badRequestError('invalid userId'));
