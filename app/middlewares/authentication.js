@@ -1,7 +1,6 @@
 const authService = require('../services/authentication');
 const { check } = require('express-validator/check');
-const { badRequestError } = require('../errors');
-const { unauthorizedError } = require('../errors');
+const { badRequestError, unauthorizedError } = require('../errors');
 const { admin_role } = require('../constants');
 const userService = require('../services/user');
 
@@ -21,13 +20,15 @@ exports.verifyToken = (req, res, next) => {
     try {
       req.userPayload = authService.decodeToken(token);
       return userService.findOne({ id: req.userPayload.id }).then(user => {
-        if (user && req.userPayload.iat > user.baseAllowedDateToken && req.userPayload.exp > Date.now()) {
+        if (user && req.userPayload.iat > user.baseAllowedDateToken) {
           return next();
         }
         return next(badRequestError('invalid token'));
       });
-    } catch {
-      return next(badRequestError('invalid token'));
+    } catch (err) {
+      if (err.message === 'Token expired') {
+        return next(unauthorizedError(err.message));
+      }
     }
   }
   return next(badRequestError('invalid token'));
