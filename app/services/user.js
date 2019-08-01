@@ -109,3 +109,8 @@ exports.findBoughtAlbums = keyValues =>
   userAlbumModel.findAll({ where: keyValues }).catch(error => {
     throw databaseError(error);
   });
+
+exports.findBoughtAlbum = keyValues =>
+  userAlbumModel.findOne({ where: keyValues }).catch(error => {
+    throw databaseError(error);
+  });
