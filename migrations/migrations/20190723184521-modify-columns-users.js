@@ -11,7 +11,7 @@ module.exports = {
         allowNull: false,
         defaultValue: default_role
       }),
-      queryInterface.addColumn('users', 'base_allowed_date_token', {
+      queryInterface.addColumn('users', 'base_allowed_time_token', {
         type: Sequelize.BIGINT,
         defaultValue: 0,
         allowNull: false
@@ -22,6 +22,6 @@ module.exports = {
       queryInterface
         .removeColumn('users', 'role')
         .then(() => queryInterface.sequelize.query('DROP TYPE enum_users_role')),
-      queryInterface.removeColumn('users', 'base_allowed_date_token')
+      queryInterface.removeColumn('users', 'base_allowed_time_token')
     ])
 };

@@ -29,11 +29,11 @@ module.exports = (sequelize, DataTypes) =>
         allowNull: false,
         defaultValue: default_role
       },
-      baseAllowedDateToken: {
+      baseAllowedTimeToken: {
         type: DataTypes.BIGINT,
         defaultValue: 0,
         allowNull: false,
-        field: 'base_allowed_date_token'
+        field: 'base_allowed_time_token'
       }
     },
     {

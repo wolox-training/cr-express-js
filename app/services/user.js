@@ -96,7 +96,7 @@ exports.updateOrCreateAdmin = user =>
 
 exports.setBaseTokenTime = userData =>
   userModel
-    .update({ baseAllowedDateToken: moment().unix() }, { where: { email: userData.email } })
+    .update({ baseAllowedTimeToken: moment().unix() }, { where: { email: userData.email } })
     .catch(error => {
       logger.info(error);
       if (error.name === 'SequelizeUniqueConstraintError') {

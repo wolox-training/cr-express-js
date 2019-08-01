@@ -20,7 +20,7 @@ exports.verifyToken = (req, res, next) => {
     try {
       req.userPayload = authService.decodeToken(token);
       return userService.findOne({ id: req.userPayload.id }).then(user => {
-        if (user && req.userPayload.iat > user.baseAllowedDateToken) {
+        if (user && req.userPayload.iat > user.baseAllowedTimeToken) {
           return next();
         }
         return next(badRequestError('invalid token'));

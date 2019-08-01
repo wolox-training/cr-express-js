@@ -41,7 +41,7 @@ exports.signIn = (req, res, next) =>
       if (userFound && encryptionService.validatePasssword(req.body.password, userFound.password)) {
         const tokenObject = authenticationService.generateToken(userFound);
         res.setHeader('Authorization', `Bearer ${tokenObject.token}`);
-        res.send({ expiration_token_date: moment(tokenObject.exp * 1000).format() });
+        res.send({ expirationTokenDate: moment(tokenObject.exp * 1000).format() });
         res.end();
       } else {
         throw badRequestError('sign in error');
