@@ -41,8 +41,8 @@ const config = {
     session: {
       header_name: 'authorization',
       secret: process.env.NODE_API_SESSION_SECRET,
-      expiry: process.env.NODE_API_SESSION_EXPIRY,
-      expiry_type: process.env.NODE_API_SSESSIONS_EXPIRY_TYPE
+      expiry: process.env.NODE_API_SESSION_EXPIRY || 30,
+      expiry_format: process.env.NODE_API_SESSIONS_EXPIRY_FORMAT_TIME || 'seconds'
     }
   },
   api_services: {

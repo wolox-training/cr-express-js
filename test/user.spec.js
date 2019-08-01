@@ -175,11 +175,11 @@ describe('GET /users - list of users', () => {
 
   it('should success with default params', done => {
     createUserModel(userData).then(createdUser => {
-      const token = authenticationService.generateToken(createdUser);
+      const tokenObject = authenticationService.generateToken(createdUser);
       createUserModel(anotherUser).then(() => {
         request(app)
           .get('/users')
-          .set('Authorization', `Bearer ${token}`)
+          .set('Authorization', `Bearer ${tokenObject.token}`)
           .then(res => {
             expect(res.status).toBe(200);
             expect(res.body.totalPages).toBe(1);
@@ -194,10 +194,10 @@ describe('GET /users - list of users', () => {
   it('should success with specified params', done => {
     createUserModel(userData).then(() => {
       createUserModel(anotherUser).then(createdUser => {
-        const token = authenticationService.generateToken(createdUser);
+        const tokenObject = authenticationService.generateToken(createdUser);
         request(app)
           .get('/users?limit=20&page=1&orderBy=name&order=desc')
-          .set('Authorization', `Bearer ${token}`)
+          .set('Authorization', `Bearer ${tokenObject.token}`)
           .then(res => {
             expect(res.status).toBe(200);
             expect(res.body.totalPages).toBe(1);
@@ -232,10 +232,10 @@ describe('POST /admin/users - signup admin users or update the user role to admi
   };
   const createUserAdmin = user =>
     createUserModel(adminUser).then(createdUser => {
-      const token = authenticationService.generateToken(createdUser);
+      const tokenObject = authenticationService.generateToken(createdUser);
       return request(app)
         .post('/admin/users')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${tokenObject.token}`)
         .send(user);
     });
 
@@ -267,10 +267,10 @@ describe('POST /admin/users - signup admin users or update the user role to admi
   it('should fail for not allowed role', done => {
     createUserModel(userData).then(createdUser => {
       expect(createdUser.role).toBe(default_role);
-      const tokenRegularUser = authenticationService.generateToken(createdUser);
+      const tokenRegularUserObject = authenticationService.generateToken(createdUser);
       request(app)
         .post('/admin/users')
-        .set('Authorization', `Bearer ${tokenRegularUser}`)
+        .set('Authorization', `Bearer ${tokenRegularUserObject.token}`)
         .send(userDataToEndpoint)
         .then(res => {
           expect(res.body.message).toBe('not allowed');

@@ -1,12 +1,12 @@
-const { badRequestError } = require('../errors');
+const { badRequestError, notFoundError } = require('../errors');
 const authenticationService = require('../services/authentication');
 const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
 const { ascOrder } = require('../constants');
 const { defaultOrderBy } = require('../constants');
 const albumService = require('../services/album');
-const { expiry, expiry_type } = require('../../config').common.session;
 const emailService = require('../services/email');
+const moment = require('moment');
 
 const createUserObject = req => ({
   email: req.body.email,
@@ -40,9 +40,9 @@ exports.signIn = (req, res, next) =>
     .findOne({ email: req.body.email })
     .then(userFound => {
       if (userFound && encryptionService.validatePasssword(req.body.password, userFound.password)) {
-        const token = authenticationService.generateToken(userFound);
-        res.setHeader('Authorization', `Bearer ${token}`);
-        res.send({ expiration_token: `${expiry} ${expiry_type}` });
+        const tokenObject = authenticationService.generateToken(userFound);
+        res.setHeader('Authorization', `Bearer ${tokenObject.token}`);
+        res.send({ expiration_token_date: moment(tokenObject.exp * 1000).format() });
         res.end();
       } else {
         throw badRequestError('sign in error');
@@ -71,17 +71,15 @@ exports.getAllUsers = (req, res, next) => {
 
 exports.buyAlbum = (req, res, next) =>
   userService
-    .buyAlbum(req.userPayload, req.params.id)
+    .buyAlbum(req.userPayload, req.params.albumId)
     .then(purchase => {
-      res.send({ user: req.userPayload.email, albumId: purchase.albumId });
+      res.status(201).send({ user: req.userPayload.email, albumId: purchase.albumId });
     })
     .catch(next);
 
-exports.listAlbumsUser = (req, res, next) => {
-  const keyValue = { userId: req.params.user_id };
-
-  return userService
-    .findBoughtAlbums(keyValue)
+exports.listAlbumsUser = (req, res, next) =>
+  userService
+    .findBoughtAlbums({ userId: req.params.userId })
     .then(boughtAlbums => {
       const albums = boughtAlbums.map(album => albumService.getAlbumById(album.albumId));
       return Promise.all(albums).then(albumsData => {
@@ -89,18 +87,17 @@ exports.listAlbumsUser = (req, res, next) => {
       });
     })
     .catch(next);
-};
 
 exports.listPhotosAlbumsBought = (req, res, next) =>
   userService
-    .findBoughtAlbums({ albumId: req.params.id })
-    .then(albums => {
-      if (albums.length !== 0) {
+    .findBoughtAlbum({ userId: req.userPayload.id, albumId: req.params.id })
+    .then(album => {
+      if (album) {
         return albumService.getPhotosAlbum(req.params.id).then(photosAlbum => {
           res.send({ photosAlbum });
         });
       }
-      throw badRequestError('invalid albumId');
+      throw notFoundError('album id not found');
     })
     .catch(next);
 
@@ -108,11 +105,7 @@ exports.invalidateSessions = (req, res, next) => {
   const { userPayload } = req;
   return userService
     .setBaseTokenTime(userPayload)
-    .then(() =>
-      userService.findOne({ email: userPayload.email }).then(userUpdated => {
-        res.status(201).send(userUpdated);
-      })
-    )
+    .then(() => res.status(200).send({ message: 'Old user logged sessions invalidated' }))
     .catch(next);
 };
 

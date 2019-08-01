@@ -3,6 +3,7 @@ const userModel = require('../models').user;
 const userAlbumModel = require('../models').user_album;
 const logger = require('.././logger');
 const { admin_role } = require('../constants');
+const moment = require('moment');
 
 const calculateTotalPages = (count, limit) => {
   if (count === 0) {
@@ -95,7 +96,7 @@ exports.updateOrCreateAdmin = user =>
 
 exports.setBaseTokenTime = userData =>
   userModel
-    .update({ baseAllowedDateToken: Date.now() }, { where: { email: userData.email } })
+    .update({ baseAllowedDateToken: moment().unix() }, { where: { email: userData.email } })
     .catch(error => {
       logger.info(error);
       if (error.name === 'SequelizeUniqueConstraintError') {
@@ -106,5 +107,10 @@ exports.setBaseTokenTime = userData =>
 
 exports.findBoughtAlbums = keyValues =>
   userAlbumModel.findAll({ where: keyValues }).catch(error => {
+    throw databaseError(error);
+  });
+
+exports.findBoughtAlbum = keyValues =>
+  userAlbumModel.findOne({ where: keyValues }).catch(error => {
     throw databaseError(error);
   });

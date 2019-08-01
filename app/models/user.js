@@ -30,8 +30,8 @@ module.exports = (sequelize, DataTypes) =>
         defaultValue: default_role
       },
       baseAllowedDateToken: {
-        type: DataTypes.DATE,
-        defaultValue: Date.now(),
+        type: DataTypes.BIGINT,
+        defaultValue: 0,
         allowNull: false,
         field: 'base_allowed_date_token'
       }

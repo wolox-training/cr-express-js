@@ -12,8 +12,8 @@ module.exports = {
         defaultValue: default_role
       }),
       queryInterface.addColumn('users', 'base_allowed_date_token', {
-        type: Sequelize.DATE,
-        defaultValue: Date.now(),
+        type: Sequelize.BIGINT,
+        defaultValue: 0,
         allowNull: false
       })
     ]),

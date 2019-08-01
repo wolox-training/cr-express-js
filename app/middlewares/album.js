@@ -3,7 +3,7 @@ const { badRequestError } = require('../errors');
 
 exports.verifyAlbumId = (req, res, next) =>
   albumService
-    .getAlbumById(req.params.id)
+    .getAlbumById(req.params.albumId)
     .then(album => {
       if (album) {
         return next();
