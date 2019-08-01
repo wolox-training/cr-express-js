@@ -87,9 +87,9 @@ exports.listAlbumsUser = (req, res, next) =>
 
 exports.listPhotosAlbumsBought = (req, res, next) =>
   userService
-    .findBoughtAlbums({ userId: req.userPayload.id, albumId: req.params.id })
-    .then(albums => {
-      if (albums.length !== 0) {
+    .findBoughtAlbum({ userId: req.userPayload.id, albumId: req.params.id })
+    .then(album => {
+      if (album) {
         return albumService.getPhotosAlbum(req.params.id).then(photosAlbum => {
           res.send({ photosAlbum });
         });
