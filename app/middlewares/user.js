@@ -1,6 +1,8 @@
 const { body, check } = require('express-validator/check');
 const { ascOrder } = require('../constants');
 const { descOrder } = require('../constants');
+const { badRequestError } = require('../errors');
+const { admin_role } = require('../constants');
 
 exports.validateEmailPassword = [
   body('email', 'email error')
@@ -34,3 +36,12 @@ exports.checkOrder = [
     .customSanitizer(value => value && value.toUpperCase())
     .isIn([ascOrder, descOrder])
 ];
+
+exports.checkBoughtAlbumsPermission = (req, res, next) => {
+  const isAdmin = req.userPayload.role === admin_role;
+  const isOwner = req.userPayload.id === parseInt(req.params.userId);
+  if (isAdmin || isOwner) {
+    return next();
+  }
+  return next(badRequestError('invalid userId'));
+};

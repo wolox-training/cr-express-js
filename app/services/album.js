@@ -1,6 +1,6 @@
 const rp = require('request-promise');
 const { albums_api } = require('../../config').api_services;
-const { defaultError } = require('../errors');
+const { defaultError, badRequestError } = require('../errors');
 
 const options = url => ({
   method: 'GET',
@@ -8,14 +8,17 @@ const options = url => ({
   json: true
 });
 
-const getAllAlbums = () =>
+exports.getAllAlbums = () =>
   rp(options('albums'))
     .then(res => res)
     .catch(err => Promise.reject(defaultError(err.message)));
 
-const getPhotosAlbum = id =>
+exports.getPhotosAlbum = id =>
   rp(options(`albums/${id}/photos`))
     .then(res => res)
     .catch(err => Promise.reject(defaultError(err.message)));
 
-module.exports = { getAllAlbums, getPhotosAlbum };
+exports.getAlbumById = id =>
+  rp(options(`albums/${id}`))
+    .then(res => res)
+    .catch(() => Promise.reject(badRequestError('invalid id')));

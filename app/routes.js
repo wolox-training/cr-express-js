@@ -4,6 +4,7 @@ const userController = require('./controllers/user');
 const userMiddleware = require('./middlewares/user');
 const authenticationMiddleware = require('./middlewares/authentication');
 const validatorErrorMiddleware = require('./middlewares/expressValidatorError');
+const albumMiddleware = require('./middlewares/album');
 
 exports.init = app => {
   app.get('/health', healthCheck);
@@ -40,5 +41,25 @@ exports.init = app => {
       authenticationMiddleware.verifyAdminRole
     ],
     userController.registerAdmin
+  );
+  app.post(
+    '/albums/:albumId',
+    [
+      authenticationMiddleware.verifyTokenFormat,
+      validatorErrorMiddleware.validateError,
+      authenticationMiddleware.verifyToken,
+      albumMiddleware.verifyAlbumId
+    ],
+    userController.buyAlbum
+  );
+  app.get(
+    '/users/:userId/albums',
+    [
+      authenticationMiddleware.verifyTokenFormat,
+      validatorErrorMiddleware.validateError,
+      authenticationMiddleware.verifyToken,
+      userMiddleware.checkBoughtAlbumsPermission
+    ],
+    userController.listAlbumsUser
   );
 };
