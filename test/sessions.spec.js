@@ -70,7 +70,7 @@ describe('POST /users/sessions - testing expiration for user token session', () 
     password: 'asdasdasd4566'
   };
   it('should success with the expiration token date', done => {
-    const oldDate = moment().unix();
+    const oldDate = moment();
     createUserModel(userData).then(() => {
       request(app)
         .post('/users/sessions')
