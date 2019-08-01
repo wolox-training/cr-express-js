@@ -15,7 +15,7 @@ const createUserModel = user =>
     role: user.role || 'regular'
   });
 
-const compareDates = (newDate, oldDate) => moment(newDate).isAfter(oldDate);
+const newDateIsAfterOldDate = (newDate, oldDate) => moment(newDate).isAfter(oldDate);
 
 const userData = {
   email: 'jose@wolox.com.ar',
@@ -34,7 +34,9 @@ describe('POST /users/sessions/invalidate_all - invalidate all the user sessions
         .send()
         .then(res => {
           expect(res.status).toBe(200);
-          expect(compareDates(res.body.baseAllowedTimeToken, createdUser.baseAllowedTimeToken)).toBe(true);
+          expect(newDateIsAfterOldDate(res.body.baseAllowedTimeToken, createdUser.baseAllowedTimeToken)).toBe(
+            true
+          );
           expect(res.body.message).toBe('Old user logged sessions invalidated');
           done();
         });
@@ -78,7 +80,7 @@ describe('POST /users/sessions - testing expiration for user token session', () 
         .then(response => {
           expect(response.status).toBe(200);
           expect(response.header.authorization).toBeDefined();
-          expect(compareDates(response.body.expirationTokenDate, oldDate)).toBe(true);
+          expect(newDateIsAfterOldDate(response.body.expirationTokenDate, oldDate)).toBe(true);
           done();
         });
     });
