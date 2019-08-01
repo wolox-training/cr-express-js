@@ -1,4 +1,4 @@
-const { badRequestError } = require('../errors');
+const { badRequestError, notFoundError } = require('../errors');
 const authenticationService = require('../services/authentication');
 const encryptionService = require('../services/encryption');
 const userService = require('../services/user');
@@ -82,5 +82,18 @@ exports.listAlbumsUser = (req, res, next) =>
       return Promise.all(albums).then(albumsData => {
         res.send({ albumsData });
       });
+    })
+    .catch(next);
+
+exports.listPhotosAlbumsBought = (req, res, next) =>
+  userService
+    .findBoughtAlbum({ userId: req.userPayload.id, albumId: req.params.id })
+    .then(album => {
+      if (album) {
+        return albumService.getPhotosAlbum(req.params.id).then(photosAlbum => {
+          res.send({ photosAlbum });
+        });
+      }
+      throw notFoundError('album id not found');
     })
     .catch(next);

@@ -6,6 +6,25 @@ const authenticationService = require('../app/services/authentication');
 const albumService = require('../app/services/album');
 albumService.getAlbumById = jest.fn(id => Promise.resolve({ title: 'The title', id }));
 
+albumService.getPhotosAlbums = jest.fn(id =>
+  Promise.resolve([
+    {
+      albumId: id,
+      id: 1,
+      title: 'accusamus beatae ad facilis cum similique qui sunt',
+      url: 'https://via.placeholder.com/600/92c952',
+      thumbnailUrl: 'https://via.placeholder.com/150/92c952'
+    },
+    {
+      albumId: id,
+      id: 2,
+      title: 'reprehenderit est deserunt velit ipsam',
+      url: 'https://via.placeholder.com/600/771796',
+      thumbnailUrl: 'https://via.placeholder.com/150/771796'
+    }
+  ])
+);
+
 const createUserModel = user =>
   userModel.create({
     email: user.email,
@@ -136,6 +155,40 @@ describe('GET /users/:userId/albums - list of bought albums', () => {
             });
         });
       });
+    });
+  });
+});
+
+describe('GET /users/albums/:id/photos - list of photos of bought album', () => {
+  const checkPhotosLength = photos => photos.length >= 0;
+  it('should success with list of photos of an album bought by an user', done => {
+    createUserModel(regularUser).then(regularUserCreated => {
+      const token = authenticationService.generateToken(regularUserCreated);
+      buyAlbum(regularUserCreated.id, 1).then(() => {
+        request(app)
+          .get('/users/albums/1/photos')
+          .set('Authorization', `Bearer ${token}`)
+          .then(response => {
+            expect(response.status).toBe(200);
+            expect(checkPhotosLength(response.body.photosAlbum)).toBe(true);
+            done();
+          });
+      });
+    });
+  });
+
+  it('should fail for invalid album id', done => {
+    createUserModel(regularUser).then(regularUserCreated => {
+      const token = authenticationService.generateToken(regularUserCreated);
+      request(app)
+        .get('/users/albums/1/photos')
+        .set('Authorization', `Bearer ${token}`)
+        .then(response => {
+          expect(response.status).toBe(404);
+          expect(response.body.message).toBe('album id not found');
+          expect(response.body.internal_code).toBe('not_found_error');
+          done();
+        });
     });
   });
 });
