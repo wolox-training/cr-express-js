@@ -62,6 +62,7 @@ exports.init = app => {
     ],
     userController.listAlbumsUser
   );
+
   app.get(
     '/users/albums/:id/photos',
     [
