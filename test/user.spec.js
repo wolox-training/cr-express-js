@@ -15,7 +15,8 @@ const createUserModel = user =>
     email: user.email,
     name: user.name,
     lastName: user.lastName,
-    password: user.password
+    password: user.password,
+    role: user.role || 'regular'
   });
 
 const userData = {
@@ -156,7 +157,6 @@ describe('POST /users/sessions  - signIn user', () => {
 });
 
 describe('GET /users - list of users', () => {
-  const token = authenticationService.generateToken(userData);
   const anotherUser = {
     email: 'kevin@wolox.com.ar',
     name: 'kevin',
@@ -173,7 +173,8 @@ describe('GET /users - list of users', () => {
     arr.every((value, index) => !index || compare(order, value[orderBy], arr[index - 1][orderBy]));
 
   it('should success with default params', done => {
-    createUserModel(userData).then(() => {
+    createUserModel(userData).then(createdUser => {
+      const token = authenticationService.generateToken(createdUser);
       createUserModel(anotherUser).then(() => {
         request(app)
           .get('/users')
@@ -191,7 +192,8 @@ describe('GET /users - list of users', () => {
 
   it('should success with specified params', done => {
     createUserModel(userData).then(() => {
-      createUserModel(anotherUser).then(() => {
+      createUserModel(anotherUser).then(createdUser => {
+        const token = authenticationService.generateToken(createdUser);
         request(app)
           .get('/users?limit=20&page=1&orderBy=name&order=desc')
           .set('Authorization', `Bearer ${token}`)
@@ -224,15 +226,17 @@ describe('POST /admin/users - signup admin users or update the user role to admi
     email: 'jorge@wolox.com.ar',
     name: 'jorge',
     lastName: 'perez',
-    password: 'hola123456',
+    password: 'asd12',
     role: 'admin'
   };
-  const token = authenticationService.generateToken(adminUser);
   const createUserAdmin = user =>
-    request(app)
-      .post('/admin/users')
-      .set('Authorization', `Bearer ${token}`)
-      .send(user);
+    createUserModel(adminUser).then(createdUser => {
+      const token = authenticationService.generateToken(createdUser);
+      return request(app)
+        .post('/admin/users')
+        .set('Authorization', `Bearer ${token}`)
+        .send(user);
+    });
 
   it('should success creating an user wich role is admin', done => {
     createUserAdmin(userDataToEndpoint).then(res => {

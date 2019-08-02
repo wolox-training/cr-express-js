@@ -28,6 +28,12 @@ module.exports = (sequelize, DataTypes) =>
         type: DataTypes.ENUM([default_role, admin_role]),
         allowNull: false,
         defaultValue: default_role
+      },
+      baseAllowedDateToken: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        allowNull: false,
+        field: 'base_allowed_date_token'
       }
     },
     {

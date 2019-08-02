@@ -93,6 +93,17 @@ exports.updateOrCreateAdmin = user =>
       throw databaseError(error);
     });
 
+exports.setBaseTokenTime = userData =>
+  userModel
+    .update({ baseAllowedDateToken: Date.now() }, { where: { email: userData.email } })
+    .catch(error => {
+      logger.info(error);
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw conflictError('user has already bought this album!');
+      }
+      throw databaseError(error);
+    });
+
 exports.findBoughtAlbums = keyValues =>
   userAlbumModel.findAll({ where: keyValues }).catch(error => {
     throw databaseError(error);

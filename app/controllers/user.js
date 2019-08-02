@@ -97,3 +97,11 @@ exports.listPhotosAlbumsBought = (req, res, next) =>
       throw notFoundError('album id not found');
     })
     .catch(next);
+
+exports.invalidateSessions = (req, res, next) => {
+  const { userPayload } = req;
+  return userService
+    .setBaseTokenTime(userPayload)
+    .then(() => res.status(200).send({ message: 'Old user logged sessions invalidated' }))
+    .catch(next);
+};

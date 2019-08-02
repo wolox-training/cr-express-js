@@ -62,7 +62,6 @@ exports.init = app => {
     ],
     userController.listAlbumsUser
   );
-
   app.get(
     '/users/albums/:id/photos',
     [
@@ -71,5 +70,14 @@ exports.init = app => {
       authenticationMiddleware.verifyToken
     ],
     userController.listPhotosAlbumsBought
+  );
+  app.post(
+    '/users/sessions/invalidate_all',
+    [
+      authenticationMiddleware.verifyTokenFormat,
+      validatorErrorMiddleware.validateError,
+      authenticationMiddleware.verifyToken
+    ],
+    userController.invalidateSessions
   );
 };
