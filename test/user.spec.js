@@ -86,7 +86,6 @@ describe('POST /signup - create users', () => {
     });
   });
 });
-
 describe('POST /users/sessions  - signIn user', () => {
   it('should success with the generated token', done => {
     const signInDataToEndpoint = {

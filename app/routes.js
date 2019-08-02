@@ -70,7 +70,7 @@ exports.init = app => {
       authenticationMiddleware.verifyToken
     ],
     userController.listPhotosAlbumsBought
-  );
+  );  
   app.post(
     '/users/sessions/invalidate_all',
     [
