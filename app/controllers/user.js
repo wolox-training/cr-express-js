@@ -5,6 +5,7 @@ const userService = require('../services/user');
 const { ascOrder } = require('../constants');
 const { defaultOrderBy } = require('../constants');
 const albumService = require('../services/album');
+const moment = require('moment');
 
 const createUserObject = req => ({
   email: req.body.email,
@@ -38,8 +39,9 @@ exports.signIn = (req, res, next) =>
     .findOne({ email: req.body.email })
     .then(userFound => {
       if (userFound && encryptionService.validatePasssword(req.body.password, userFound.password)) {
-        const token = authenticationService.generateToken(userFound);
-        res.setHeader('Authorization', `Bearer ${token}`);
+        const tokenObject = authenticationService.generateToken(userFound);
+        res.setHeader('Authorization', `Bearer ${tokenObject.token}`);
+        res.send({ expirationTokenDate: moment(tokenObject.exp * 1000).format() });
         res.end();
       } else {
         throw badRequestError('sign in error');

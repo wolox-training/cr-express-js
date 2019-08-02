@@ -55,10 +55,10 @@ const adminUser = {
 describe('/POST /albums/:albumId - user purchases an album', () => {
   it('should success, an user buys a book', done => {
     createUserModel(regularUser).then(createdUser => {
-      const token = authenticationService.generateToken(createdUser);
+      const tokenObject = authenticationService.generateToken(createdUser);
       request(app)
         .post('/albums/4')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${tokenObject.token}`)
         .send()
         .then(res => {
           userAlbumModel.findOne({ where: { userId: 1, albumId: 4 } }).then(userPurchaseFound => {
@@ -75,17 +75,17 @@ describe('/POST /albums/:albumId - user purchases an album', () => {
 
   it('should fail because user tries to buy the same book', done => {
     createUserModel(regularUser).then(createdUser => {
-      const token = authenticationService.generateToken(createdUser);
+      const tokenObject = authenticationService.generateToken(createdUser);
       request(app)
         .post('/albums/4')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${tokenObject.token}`)
         .send()
         .then(res => {
           expect(res.status).toBe(201);
           expect(res.body.albumId).toBe(4);
           request(app)
             .post('/albums/4')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${tokenObject.token}`)
             .send()
             .then(response => {
               expect(response.status).toBe(409);
@@ -100,11 +100,11 @@ describe('/POST /albums/:albumId - user purchases an album', () => {
 describe('GET /users/:userId/albums - list of bought albums', () => {
   it('should success with the albums bought by the logged regular user', done => {
     createUserModel(regularUser).then(createdUser => {
-      const token = authenticationService.generateToken(createdUser);
+      const tokenObject = authenticationService.generateToken(createdUser);
       buyAlbum(createdUser.id, 2).then(purchasedAlbum => {
         request(app)
           .get('/users/1/albums')
-          .set('Authorization', `Bearer ${token}`)
+          .set('Authorization', `Bearer ${tokenObject.token}`)
           .then(albumsUserList => {
             expect(albumsUserList.status).toBe(200);
             expect(albumsUserList.body.albumsData[0].id).toBe(purchasedAlbum.albumId);
@@ -116,12 +116,12 @@ describe('GET /users/:userId/albums - list of bought albums', () => {
 
   it('should success with the albums bought by an user consulted by an adminUser', done => {
     createUserModel(adminUser).then(adminUserCreated => {
-      const token = authenticationService.generateToken(adminUserCreated);
+      const tokenObject = authenticationService.generateToken(adminUserCreated);
       createUserModel(regularUser).then(regularUserCreated => {
         buyAlbum(regularUserCreated.id, 2).then(purchasedAlbum => {
           request(app)
             .get('/users/2/albums')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${tokenObject.token}`)
             .then(albumsUserList => {
               expect(albumsUserList.status).toBe(200);
               expect(albumsUserList.body.albumsData[0].id).toBe(purchasedAlbum.albumId);
@@ -141,12 +141,12 @@ describe('GET /users/:userId/albums - list of bought albums', () => {
       role: 'regular'
     };
     createUserModel(regularUser).then(regularUserCreated => {
-      const token = authenticationService.generateToken(regularUserCreated);
+      const tokenObject = authenticationService.generateToken(regularUserCreated);
       createUserModel(anotherRegularUser).then(anotherRegularUserCreated => {
         buyAlbum(anotherRegularUserCreated.id, 2).then(() => {
           request(app)
             .get('/users/2/albums')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${tokenObject.token}`)
             .then(response => {
               expect(response.status).toBe(400);
               expect(response.body.message).toBe('invalid userId');
@@ -163,11 +163,11 @@ describe('GET /users/albums/:id/photos - list of photos of bought album', () => 
   const checkPhotosLength = photos => photos.length >= 0;
   it('should success with list of photos of an album bought by an user', done => {
     createUserModel(regularUser).then(regularUserCreated => {
-      const token = authenticationService.generateToken(regularUserCreated);
+      const tokenObject = authenticationService.generateToken(regularUserCreated);
       buyAlbum(regularUserCreated.id, 1).then(() => {
         request(app)
           .get('/users/albums/1/photos')
-          .set('Authorization', `Bearer ${token}`)
+          .set('Authorization', `Bearer ${tokenObject.token}`)
           .then(response => {
             expect(response.status).toBe(200);
             expect(checkPhotosLength(response.body.photosAlbum)).toBe(true);
@@ -179,10 +179,10 @@ describe('GET /users/albums/:id/photos - list of photos of bought album', () => 
 
   it('should fail for invalid album id', done => {
     createUserModel(regularUser).then(regularUserCreated => {
-      const token = authenticationService.generateToken(regularUserCreated);
+      const tokenObject = authenticationService.generateToken(regularUserCreated);
       request(app)
         .get('/users/albums/1/photos')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${tokenObject.token}`)
         .then(response => {
           expect(response.status).toBe(404);
           expect(response.body.message).toBe('album id not found');
